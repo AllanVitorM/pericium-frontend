@@ -1,5 +1,9 @@
-import { buttonGIGANTE } from "../../components/button"
+import Login from ".";
 
 export default function login() {
-    return()
+  return(
+    <div>
+      <Login/>
+    </div>
+  )
 }
