@@ -1,4 +1,4 @@
-
+import ButtonLogin from "@/components/button"
 import ladoEsquerdo from "@/app/assents/ladoesquerdo.png"
 import Image from "next/image"
 
@@ -47,14 +47,9 @@ export default function login() {
                         required
                     />
                     
-                </div>
-                    <button
-                        type="submit"
-                        className="wfull py-2 px-4 bg-blue-900 text-white  font-semibold rounded-md hover:bg-blue-800 transition duration-300"
-                        >
-                        Entrar
-                        </button>
 
+                </div>
+                <ButtonLogin/>
                     <p className="text-sm text-gray-500 text-center mt-4">
                         Esqueceu a senha?
                     </p>
