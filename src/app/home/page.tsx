@@ -1,8 +1,5 @@
-import Home from "."
-
 export default function HomePage(){
     return(
-            <Home/>
-
+        <h1>Home</h1>
     )
 }
