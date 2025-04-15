@@ -1,7 +1,13 @@
+"use client";
+
 import Image from "next/image";
 import logo from "@/assets/logo.png";
+import { useState } from "react";
+import ModalUsuario from "@/components/modalusuario";
 
 export default function FuncionariosPage() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
@@ -35,7 +41,10 @@ export default function FuncionariosPage() {
         {/* Título e botão */}
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-xl font-bold">Funcionários</h1>
-          <button className="flex items-center gap-2 bg-[#002C49] text-white px-4 py-2 rounded-full hover:bg-blue-800">
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="flex items-center gap-2 bg-[#002C49] text-white px-4 py-2 rounded-full hover:bg-blue-800"
+          >
             <span className="text-lg font-bold">+</span> Cadastrar funcionário
           </button>
         </div>
@@ -91,6 +100,12 @@ export default function FuncionariosPage() {
             </tbody>
           </table>
         </div>
+
+        {/* Modal */}
+        <ModalUsuario 
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+        />
       </main>
     </div>
   );
