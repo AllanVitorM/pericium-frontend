@@ -1,13 +1,28 @@
-// /src/app/home/page.tsx
 "use client";
 
 import Image from "next/image";
 import logo from "@/assets/logo.png";
 import { useState } from "react";
-import ModalNovoCaso from "../../components/modalnovocaso";
+import ModalNovoCaso from "@/components/modalnovocaso";
+import ModalCaso from "@/components/modalcaso";
+import ModalEnvioEvidencia from "@/components/modalenvioevidencia";
+import ModalEditarEvidencia from "@/components/modaleditarevidencia";
+import ModalLaudo from "@/components/modallaudo";
 
 export default function CasosPage() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalAtual, setModalAtual] = useState<string | null>(null);
+
+  const abrirModal = (nome: string) => setModalAtual(nome);
+  const fecharModal = () => setModalAtual(null);
+
+  const handleNext = (proximoModal: string) => {
+    setModalAtual(proximoModal);
+  };
+
+  const abrirEditarEvidencia = (idCaso: string) => {
+    // Aqui você pode usar o id do caso para identificar qual evidência editar, se necessário.
+    setModalAtual("editarEvidencia");
+  };
 
   return (
     <div className="flex h-screen">
@@ -37,7 +52,7 @@ export default function CasosPage() {
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-xl font-bold">Casos Periciais</h1>
           <button 
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => abrirModal("novoCaso")}
             className="flex items-center gap-2 bg-[#002C49] text-white px-4 py-2 rounded-full hover:bg-blue-800"
           >
             <span className="text-lg font-bold">+</span> Novo caso
@@ -70,8 +85,8 @@ export default function CasosPage() {
                     <td key={index} className="px-4 py-2">{val}</td>
                   ))}
                   <td className="px-4 py-2 flex gap-2">
-                    <button title="Editar">✏️</button>
-                    <button title="Imprimir">🖨️</button>
+                    <button title="Visualizar" onClick={() => abrirModal("caso")}>👁️</button>
+                    <button title="Editar" onClick={() => abrirEditarEvidencia("idCaso")}>✏️</button>
                     <button title="Excluir">🗑️</button>
                   </td>
                 </tr>
@@ -80,8 +95,31 @@ export default function CasosPage() {
           </table>
         </div>
 
-        {/* Modal de Novo Caso */}
-        <ModalNovoCaso isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+        {/* Modais */}
+        <ModalNovoCaso
+          isOpen={modalAtual === "novoCaso"}
+          onClose={fecharModal}
+          onNext={() => abrirModal("caso")}
+        />
+        <ModalCaso
+          isOpen={modalAtual === "caso"}
+          onClose={fecharModal}
+          onNext={() => abrirModal("envioEvidencia")}
+        />
+        <ModalEnvioEvidencia
+          isOpen={modalAtual === "envioEvidencia"}
+          onClose={fecharModal}
+          onNext={() => abrirModal("editarEvidencia")}
+        />
+        <ModalEditarEvidencia
+          isOpen={modalAtual === "editarEvidencia"}
+          onClose={fecharModal}
+          onNext={() => abrirModal("laudo")}
+        />
+        <ModalLaudo
+          isOpen={modalAtual === "laudo"}
+          onClose={fecharModal}
+        />
       </main>
     </div>
   );

@@ -1,64 +1,82 @@
-"use client";
+import React from "react";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-
-import Etapa1Registro from "./steps/Etapa1Registro";
-import Etapa2Periciado from "./steps/Etapa2Periciado";
-import Etapa3Pericial from "./steps/Etapa3Pericial";
-
-export default function ModalNovoCaso({
-  isOpen,
-  onClose,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-}) {
-  const [step, setStep] = useState(1);
-  const router = useRouter();
-
-  const handleCancel = () => {
-    onClose(); // fecha o modal
-    router.push("/home"); // redireciona para a página home
-  };
-
-  const renderStep = () => {
-    switch (step) {
-      case 1:
-        return <Etapa1Registro onNext={() => setStep(2)} />;
-      case 2:
-        return (
-          <Etapa2Periciado
-            onNext={() => setStep(3)}
-            onBack={() => setStep(1)}
-          />
-        );
-      case 3:
-        return (
-          <Etapa3Pericial
-            onBack={() => setStep(2)}
-            onNext={() => onClose()}
-          />
-        );
-      default:
-        return null;
-    }
-  };
-
+export default function ModalNovoCaso({ isOpen, onClose, onNext }: any) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50  flex justify-center items-center z-50">
-      <div className="bg-white rounded-xl p-6 w-[600px] max-h-[90vh] overflow-auto shadow-lg relative">
-        {renderStep()}
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div className="bg-white p-6 rounded-xl w-96 shadow-lg">
+        <h2 className="text-2xl font-bold mb-6">Registrar Caso</h2>
 
-        {/* Botão Cancelar */}
-        <button
-          onClick={handleCancel}
-          className="absolute top-4 right-4 text-red-500 hover:text-red-700 font-semibold"
-        >
-          Cancelar
-        </button>
+        <div className="flex flex-col gap-4">
+          {/* Título */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium">
+              Título<span className="text-red-500">*</span>
+            </label>
+            <input
+              className="p-2 border border-gray-300 rounded"
+              placeholder="Placeholder"
+            />
+          </div>
+
+          {/* Status */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium">
+              Status<span className="text-red-500">*</span>
+            </label>
+            <select
+              className="p-2 border border-gray-300 rounded text-gray-500"
+              defaultValue=""
+            >
+              <option value="" disabled>
+                Placeholder
+              </option>
+              <option value="aberto">Aberto</option>
+              <option value="em-andamento">Em andamento</option>
+              <option value="finalizado">Finalizado</option>
+            </select>
+          </div>
+
+          {/* Data de abertura */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium">
+              Data de abertura<span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              placeholder="dd/mm/aaaa"
+              className="p-2 border border-gray-300 rounded"
+            />
+          </div>
+
+          {/* Descrição */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium">
+              Descrição<span className="text-red-500">*</span>
+            </label>
+            <textarea
+              className="p-2 border border-gray-300 rounded h-24 resize-none"
+              placeholder="Escreva aqui"
+            />
+          </div>
+        </div>
+
+        {/* Botões */}
+        <div className="flex justify-between mt-6">
+          <button
+            onClick={onClose}
+            className="flex items-center gap-2 border border-gray-300 px-4 py-2 rounded text-gray-700 bg-white hover:bg-gray-100"
+          >
+            &larr; Cancelar
+          </button>
+          <button
+            onClick={onNext}
+            className="flex items-center gap-2 bg-[#002D62] text-white px-6 py-2 rounded hover:bg-[#001f47]"
+          >
+            Cadastrar &rarr;
+          </button>
+        </div>
       </div>
     </div>
   );
