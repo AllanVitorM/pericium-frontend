@@ -1,9 +1,10 @@
 import Login from "./login/page";
 
-export default function login() {
+
+export default function Inicio() {
   return(
     <div>
-      <Login/>
+     <Login />
     </div>
   )
 }
