@@ -1,20 +1,35 @@
+'use client'
 import Sidebar from "@/components/sidebar";
 import AdminHeader from "@/components/headeradm";
-import FuncionariosSection from "@/components/fucionariosection";
+import TableSection from "@/components/tablesection";
+import ProtectedRoute from "@/components/protect_route/protectRoute";
+import { ButtonandSearch } from "@/components/button";
+import ModalUser from "@/components/modalUser";
+import { useState } from "react";
 
 export default function FuncionariosPage() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
   return (
-    <div className="flex h-screen">
-      {/* Sidebar fixa na lateral, sem sobrepor o conteúdo */}
-      <div className="w-64">
-        <Sidebar />
+    <ProtectedRoute allowedRoles={["ADMIN"]}>
+      <div className="flex h-screen">
+        {/* Sidebar fixa na lateral, sem sobrepor o conteúdo */}
+        <div className="w-64">
+          <Sidebar />
+        </div>
+        {/* Conteúdo principal ocupa o restante da tela */}
+        <main className="flex-1 bg-white p-6 overflow-y-auto">
+          {/* Topo com ID, nome e cargo */}
+          <AdminHeader id="242424" nome="Matheus Ramos" cargo="Administrador" />
+          <ButtonandSearch text="Novo Usuário" onClick={openModal}/>
+          <TableSection />
+        </main>
       </div>
-      {/* Conteúdo principal ocupa o restante da tela */}
-      <main className="flex-1 bg-white p-6 overflow-y-auto">
-        {/* Topo com ID, nome e cargo */}
-        <AdminHeader id="242424" nome="Matheus Ramos" cargo="Administrador"/>
-        <FuncionariosSection/>
-      </main>
-    </div>
+
+      <ModalUser isOpen={isModalOpen} onClose={closeModal} />
+    </ProtectedRoute>
   );
 }

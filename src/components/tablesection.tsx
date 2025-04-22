@@ -1,27 +1,6 @@
-export default function FuncionariosSection() {
+export default function TableSection() {
     return (
         <section>
-            <div className="w-full">
-                {/* Título e botão */}
-                <div className="flex justify-between items-center mb-4">
-                    <h1 className="text-xl font-bold">Funcionários</h1>
-                </div>
-                <div className="flex">
-                    <div className="w-1/4 mb-4">
-                        <button className="flex items-center gap-2 bg-[#002C49] text-white px-4 py-2 rounded-full hover:bg-blue-800">
-                            <span className="text-lg font-bold">+</span> Cadastrar funcionário
-                        </button>
-                    </div>
-                    {/* Campo de pesquisa */}
-                    <div className="flex justify-end mb-4 w-3/4">
-                        <input
-                            type="text"
-                            placeholder="Pesquisar"
-                            className="border border-gray-400 px-4 py-1 rounded-full w-72 text-sm"
-                        />
-                    </div>
-                </div>
-            </div>
             {/* Tabela */}
             <div className="overflow-auto rounded-lg border border-gray-300">
                 <table className="w-full text-sm">
