@@ -111,7 +111,7 @@ export default function ModalEditarEvidencia({
             onClick={onNext}
             className="flex items-center gap-2 bg-[#002D62] text-white px-6 py-2 rounded hover:bg-[#001f47]"
           >
-            Editar &rarr;
+            Enviar &rarr;
           </button>
         </div>
       </div>

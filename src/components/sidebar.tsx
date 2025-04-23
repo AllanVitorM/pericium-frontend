@@ -2,11 +2,17 @@
 import Image from "next/image";
 import logoAzul from "@/assets/Pericium_azul.png";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+
 
 export default function Sidebar() {
   const router = useRouter();
+  const { logout } = useAuth();
 
   const handleNavigation = (path: string) => {
+    if (path === "/login") {
+      logout();
+    }
     router.push(path);
   };
 
@@ -15,6 +21,7 @@ export default function Sidebar() {
     { name: "Casos", path: "/casos" },
     { name: "Funcionários", path: "/criarUsuarios" },
     { name: "Perfil", path: "/perfil" },
+    { name: "Sair", path: "/login" },
   ];
 
   return (
