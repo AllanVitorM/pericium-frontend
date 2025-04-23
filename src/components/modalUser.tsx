@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { criarUsuario } from "@/service/user";
 interface modalNovoUsuarioProps {
   isOpen: boolean;
@@ -47,6 +47,26 @@ export default function ModalUser({ isOpen, onClose }: modalNovoUsuarioProps) {
     }
   };
 
+  useEffect(() => {
+    if (temporaryPassword) {
+      const timer = setTimeout(() => {
+        handleClose();
+      }, 5000);
+      return () => clearTimeout(timer)
+    }
+  }, [temporaryPassword])
+
+  const handleClose = () =>{
+    onClose();
+    setFormData({
+      name: "",
+      email: "",
+      cpf: "",
+      role: "ASSISTENTE",
+    });
+    setTemporaryPassword("");
+    setError("");
+  }
   if (!isOpen) return null;
 
   return (

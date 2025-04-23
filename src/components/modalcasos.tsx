@@ -1,21 +1,40 @@
-'use client';
-import React from "react";
+"use client";
+import React, { useState, useEffect } from "react";
 
+import { FileText } from "lucide-react";
 interface ModalCasoProps {
   isOpen: boolean;
   onClose: () => void;
   onNext: (modalName: string) => void;
+  casoId: string | null;
 }
 
-export default function ModalCaso({ isOpen, onClose, onNext }: ModalCasoProps) {
+export default function ModalCaso({ isOpen, onClose, onNext, casoId }: ModalCasoProps) {
+  const [casoData, setCasoData] = useState<{ titulo: string; descricao: string; } | null>(null);
+
+  useEffect(() => {
+    if(isOpen && casoId){
+    
+    }
+  })
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 bg-opacity-40 flex items-center justify-center z-50">
       <div className="bg-white p-6 rounded-lg w-[700px] shadow-lg">
+      {/* TITULO */}  
         <h2 className="text-xl font-semibold mb-4">Caso</h2>
-
         <div className="mb-4">
+          {/* BOTÃO GERAR LAUDO*/}
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold">Editar Caso</h2>
+            <button className="flex items-center gap-2 bg-[#002D62] text-white text-sm px-4 py-2 rounded">
+              <FileText size={16} />
+              Relatório
+            </button>
+          </div>
+          {/* BOTÃO GERAR LAUDO*/}
           <label className="block text-gray-700 text-sm mb-1">
             Título <span className="text-red-500">*</span>
           </label>
@@ -25,7 +44,7 @@ export default function ModalCaso({ isOpen, onClose, onNext }: ModalCasoProps) {
             className="w-full border border-gray-400 rounded px-2 py-1"
           />
         </div>
-
+        {/* TITULO */}
         <div className="mb-6">
           <label className="block text-gray-700 text-sm mb-1">Descrição</label>
           <textarea
@@ -67,8 +86,8 @@ export default function ModalCaso({ isOpen, onClose, onNext }: ModalCasoProps) {
                 <td className="px-3 py-2">01/01/2025</td>
                 <td className="px-3 py-2 flex gap-2">
                   <button title="Visualizar">👁️</button>
-                  <button 
-                    title="Editar" 
+                  <button
+                    title="Editar"
                     onClick={() => onNext("editarEvidencia")}
                   >
                     ✏️
