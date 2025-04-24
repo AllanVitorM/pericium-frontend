@@ -46,6 +46,20 @@
     return response.data;
   };
 
+  export const getIdCaso = async (id: string) => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      throw new Error("Token JWT não encontrado.")
+    }
+
+    const response = await api.get(`/cases/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data
+  }
 
   export const updateCaso = async () => {
     const token = localStorage.getItem("token");
