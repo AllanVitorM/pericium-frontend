@@ -5,26 +5,32 @@ interface CreateEvidenciaDTO {
     descricao: string;
     tipo: string;
     local: string;
-    dateRegister: Date
+    dateRegister: string
     imageUrl: string;
     caseId: string;
   }
 
-  export const criarEvidencia = async (dados: CreateEvidenciaDTO) => {
+  export const criarEvidencia = async (dados: FormData) => {
     const token = localStorage.getItem("token");
 
     if (!token) {
         throw new Error("Token JWT não encontrado.");
       }
 
-    const response = await api.post("/evidencias/createevidence", dados, {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-        
-    })
-    return response.data
-  }
+      try {
+        const response = await api.post("/evidencias/createevidence", dados, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        });
+    
+        return response.data;
+      } catch (error: any) {
+        console.error("Erro no Axios:", error.response?.data || error.message || error);
+        throw error;
+      }
+    };
 
   export const getEvidencia = async(caseId: string) => {
     const token = localStorage.getItem("token");
