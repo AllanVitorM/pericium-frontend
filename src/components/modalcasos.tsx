@@ -1,29 +1,55 @@
 "use client";
 import React, { useState, useEffect } from "react";
-
+import { getIdCaso } from "@/service/casos";
 import { FileText } from "lucide-react";
 interface ModalCasoProps {
   isOpen: boolean;
   onClose: () => void;
   onNext: (modalName: string) => void;
-  casoId: string | null;
+  casoId: string;
 }
 
-export default function ModalCaso({ isOpen, onClose, onNext, casoId }: ModalCasoProps) {
-  const [casoData, setCasoData] = useState<{ titulo: string; descricao: string; } | null>(null);
+export default function ModalCaso({
+  isOpen,
+  onClose,
+  onNext,
+  casoId,
+}: ModalCasoProps) {
+  const [casoData, setCasoData] = useState<{
+    titulo: string;
+    descricao: string;
+  }> ({
+    titulo: "",
+    descricao: "",
+  });
 
   useEffect(() => {
-    if(isOpen && casoId){
-    
-    }
-  })
+    const fetchCaso = async () => {
+
+      if (!casoId) {
+        console.warn("ID do caso não definido ainda. Abortando fetch.");
+        return;
+      }
+        try {
+          console.log("Chamando fetchCaso para o caso ID:", casoId);
+          const response = await getIdCaso(casoId);
+          console.log("Dado do caso:", response); 
+          setCasoData(response); // aqui está a correção
+          console.log(casoData)
+        } catch (error) {
+          console.error("Erro ao buscar o caso", error);
+        }
+    };
+  
+    fetchCaso();
+  }, [isOpen, casoId]);
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 bg-opacity-40 flex items-center justify-center z-50">
       <div className="bg-white p-6 rounded-lg w-[700px] shadow-lg">
-      {/* TITULO */}  
+        {/* TITULO */}
         <h2 className="text-xl font-semibold mb-4">Caso</h2>
         <div className="mb-4">
           {/* BOTÃO GERAR LAUDO*/}
@@ -40,6 +66,8 @@ export default function ModalCaso({ isOpen, onClose, onNext, casoId }: ModalCaso
           </label>
           <input
             type="text"
+            value={casoData.titulo}
+            onChange={(e) => setCasoData((prev) => ({ ...prev, titulo: e.target.value }))}
             placeholder="Placeholder"
             className="w-full border border-gray-400 rounded px-2 py-1"
           />
@@ -50,6 +78,8 @@ export default function ModalCaso({ isOpen, onClose, onNext, casoId }: ModalCaso
           <textarea
             className="w-full border border-gray-400 rounded px-2 py-1"
             placeholder="Escreva aqui"
+            value={casoData.descricao}
+            onChange={(e) => setCasoData((prev) => ({...prev, descricao: e.target.value}))}
             rows={3}
           />
         </div>

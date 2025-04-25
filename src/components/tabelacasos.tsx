@@ -5,7 +5,7 @@ import ModalLaudo from "@/components/modallaudo";
 import { useState, useEffect } from "react";
 import { getCaso } from "@/service/casos";
 import { Eye } from "lucide-react";
-import { Pencil } from "lucide-react";
+
 import { CircleX } from "lucide-react";
 
 function parseJwt(token: string): any {
@@ -21,6 +21,7 @@ export default function TableCases() {
   const [modalAtual, setModalAtual] = useState<string | null>(null);
   const [casos, setCasos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [casoSelecionado, setCasoSelecionado] = useState<any | null>(null);
 
   const abrirModal = (nome: string) => setModalAtual(nome);
   const fecharModal = () => setModalAtual(null);
@@ -64,12 +65,13 @@ export default function TableCases() {
     carregarCasos();
   }, []);
 
+
   return (
     <>
       <table className="w-full text-sm ">
         <thead>
           <tr className="bg-[#B6C0C7] text-left">
-            {["ID do Caso", "Data", "Status", "Responsáveis", "Ações"].map(
+            {["ID do Caso", "Titulo" ,"Data", "Status", "Responsáveis", "Ações"].map(
               (col) => (
                 <th key={col} className="px-4 py-2 font-medium">
                   {col}
@@ -99,20 +101,22 @@ export default function TableCases() {
                 className={i % 2 == 0 ? "bg-[#E8EBED]" : "bg-[#B6C0C7]"}
               >
                 <td>{casos._id}</td>
+                <td>{casos.titulo}</td>
                 <td>{new Date(casos.dataAbertura).toLocaleDateString()}</td>
                 <td>{casos.status}</td>
                 <td>{casos.userId?.name || "-"}</td>
-                <tr className="flex gap-3">
-                  <td>
-                    <Eye onClick={() => abrirModal("caso")} className="cursor-pointer"/>
-                  </td>
-                  <td>
-                    <Pencil onClick={() => abrirModal("editarEvidencia")} className="cursor-pointer"/>
-                  </td>
-                  <td>
-                    <CircleX/>
-                  </td>
-                </tr>
+                <td>
+                  <div className="flex gap-3">
+                    <Eye
+                      onClick={() => {
+                        setCasoSelecionado(casos);
+                        abrirModal("caso")
+                      }}
+                      className="cursor-pointer"
+                    />
+                    <CircleX />
+                  </div>
+                </td>
               </tr>
             ))
           )}
@@ -123,6 +127,7 @@ export default function TableCases() {
         isOpen={modalAtual === "caso"}
         onClose={fecharModal}
         onNext={handleNext}
+        casoId={casoSelecionado?._id}
       />
       <ModalEnvioEvidencia
         isOpen={modalAtual === "envioEvidencia"}
