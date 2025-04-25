@@ -47,6 +47,11 @@
   };
 
   export const getIdCaso = async (id: string) => {
+
+    if (!id) {
+      throw new Error("ID do caso não foi fornecido.");
+    }
+
     const token = localStorage.getItem("token");
 
     if (!token) {

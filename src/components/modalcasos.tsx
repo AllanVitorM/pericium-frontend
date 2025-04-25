@@ -18,11 +18,18 @@ export default function ModalCaso({
   const [casoData, setCasoData] = useState<{
     titulo: string;
     descricao: string;
-  } | null>(null);
+  }> ({
+    titulo: "",
+    descricao: "",
+  });
 
   useEffect(() => {
     const fetchCaso = async () => {
-      const casoDeTeste = "67fc5261747296c1881b256c"; 
+
+      if (!casoId) {
+        console.warn("ID do caso não definido ainda. Abortando fetch.");
+        return;
+      }
         try {
           console.log("Chamando fetchCaso para o caso ID:", casoId);
           const response = await getIdCaso(casoId);
@@ -59,8 +66,8 @@ export default function ModalCaso({
           </label>
           <input
             type="text"
-            value={casoData?.titulo}
-            onChange={(e) => setCasoData((prev) => prev ? { ...prev, titulo: e.target.value } : null)}
+            value={casoData.titulo}
+            onChange={(e) => setCasoData((prev) => ({ ...prev, titulo: e.target.value }))}
             placeholder="Placeholder"
             className="w-full border border-gray-400 rounded px-2 py-1"
           />
@@ -71,7 +78,8 @@ export default function ModalCaso({
           <textarea
             className="w-full border border-gray-400 rounded px-2 py-1"
             placeholder="Escreva aqui"
-            value={casoData?.descricao}
+            value={casoData.descricao}
+            onChange={(e) => setCasoData((prev) => ({...prev, descricao: e.target.value}))}
             rows={3}
           />
         </div>

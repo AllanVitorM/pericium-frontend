@@ -71,7 +71,7 @@ export default function TableCases() {
       <table className="w-full text-sm ">
         <thead>
           <tr className="bg-[#B6C0C7] text-left">
-            {["ID do Caso", "Data", "Status", "Responsáveis", "Ações"].map(
+            {["ID do Caso", "Titulo" ,"Data", "Status", "Responsáveis", "Ações"].map(
               (col) => (
                 <th key={col} className="px-4 py-2 font-medium">
                   {col}
@@ -101,6 +101,7 @@ export default function TableCases() {
                 className={i % 2 == 0 ? "bg-[#E8EBED]" : "bg-[#B6C0C7]"}
               >
                 <td>{casos._id}</td>
+                <td>{casos.titulo}</td>
                 <td>{new Date(casos.dataAbertura).toLocaleDateString()}</td>
                 <td>{casos.status}</td>
                 <td>{casos.userId?.name || "-"}</td>
