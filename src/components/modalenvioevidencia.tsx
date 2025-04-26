@@ -1,90 +1,128 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Upload } from "lucide-react";
 import { criarEvidencia } from "@/service/evidencia";
 
-function parseJwt(token: string): any {
-  try {
-    return JSON.parse(atob(token.split('.')[1]));
-  } catch (e) {
-    console.error("Erro ao decodificar token jwt", e);
-    return null;
-  }
-}
-
-export default function ModalEnvioEvidencia({ isOpen, onClose, onNext }: any) {
-  const [formData, setFormData] = useState<{
+export default function ModalEnvioEvidencia({
+  isOpen,
+  onClose,
+  casoSelecionado,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  casoSelecionado: {
     title: string;
     descricao: string;
     tipo: string;
     local: string;
     dateRegister: string;
-    imageUrl:  string;
     caseId: string;
-  }>({
+  };
+}) {
+  const [formData, setFormData] = useState({
     title: "",
     descricao: "",
     tipo: "",
     local: "",
     dateRegister: "",
     imageUrl: "",
+    imageFile: null as File | null,
     caseId: "",
   });
 
-  const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const selectedFile = e.target.files[0];
-      setFile(selectedFile);
+    const file = e.target.files?.[0];
+    if (file) {
       setFormData((prev) => ({
         ...prev,
-        imageUrl: selectedFile.name, // apenas exibe o nome do arquivo
+        imageUrl: file.name,
+        imageFile: file,
       }));
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setError("");
-
+    if (
+      !formData.title ||
+      !formData.descricao ||
+      !formData.tipo ||
+      !formData.dateRegister
+    ) {
+      setLoading(true);
+      setError("");
+    }
     const token = localStorage.getItem("token");
+
     if (!token) {
       setError("Token não encontrado");
       setLoading(false);
       return;
     }
 
-    const decoded = parseJwt(token);
-    const caseId = decoded?.sub;
+    const formDataToSend = new FormData();
+    formDataToSend.append("title", formData.title);
+    formDataToSend.append("descricao", formData.descricao);
+    formDataToSend.append("tipo", formData.tipo);
+    formDataToSend.append("local", formData.local);
+    formDataToSend.append(
+      "dateRegister",
+      new Date(formData.dateRegister).toISOString()
+    );
+    formDataToSend.append("caseId", formData.caseId);
+
+    if (formData.imageFile) {
+      formDataToSend.append("file", formData.imageFile);
+    }
+    console.log("teste de aparencia: ", [...formDataToSend]);
 
     try {
-      const form = new FormData();
-      form.append("title", formData.title);
-      form.append("descricao", formData.descricao);
-      form.append("tipo", formData.tipo);
-      form.append("local", formData.local);
-      form.append("dateRegister", formData.dateRegister);
-      form.append("caseId", caseId);
-      if (file) form.append("file", file); // envia o arquivo como 'file'
-
-      await (formData);
+      await criarEvidencia(formDataToSend);
+      console.log("ENVIANDO:", formDataToSend);
       onClose();
     } catch (error) {
-      console.log("Erro ao criar Evidência", error);
+      console.log("Erro ao criar caso", error);
     } finally {
       setLoading(false);
     }
   };
+
+  const handleClose = () => {
+    setFormData({
+      title: "",
+      descricao: "",
+      tipo: "",
+      local: "",
+      dateRegister: "",
+      imageUrl: "",
+      imageFile: null,
+      caseId: "",
+    });
+    setError("");
+    onClose();
+  };
+
+  useEffect(() => {
+    if (casoSelecionado?.caseId) {
+      setFormData((prev) => ({
+        ...prev,
+        caseId: casoSelecionado.caseId,
+        imageUrl: "",
+        imageFile: null,
+      }));
+    }
+  }, [casoSelecionado]);
 
   if (!isOpen) return null;
 
@@ -95,7 +133,9 @@ export default function ModalEnvioEvidencia({ isOpen, onClose, onNext }: any) {
 
         <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
           <div className="flex flex-col">
-            <label className="text-sm font-medium">Título<span className="text-red-500">*</span></label>
+            <label className="text-sm font-medium">
+              Título<span className="text-red-500">*</span>
+            </label>
             <input
               name="title"
               value={formData.title}
@@ -106,18 +146,24 @@ export default function ModalEnvioEvidencia({ isOpen, onClose, onNext }: any) {
           </div>
 
           <div className="flex flex-col">
-            <label className="text-sm font-medium">Descrição<span className="text-red-500">*</span></label>
+            <label className="text-sm font-medium">
+              Data de Registro<span className="text-red-500">*</span>
+            </label>
             <input
-              name="descricao"
-              value={formData.descricao}
-              onChange={handleChange}
+              name="dateRegister"
+              type="date"
+              value={formData.dateRegister || ""}
+              onChange={(e) =>
+                setFormData({ ...formData, dateRegister: e.target.value })
+              }
               className="p-2 border border-gray-300 rounded"
-              placeholder="Descreva o Caso"
             />
           </div>
 
           <div className="flex flex-col">
-            <label className="text-sm font-medium">Tipo<span className="text-red-500">*</span></label>
+            <label className="text-sm font-medium">
+              Tipo<span className="text-red-500">*</span>
+            </label>
             <input
               name="tipo"
               value={formData.tipo}
@@ -128,7 +174,9 @@ export default function ModalEnvioEvidencia({ isOpen, onClose, onNext }: any) {
           </div>
 
           <div className="flex flex-col">
-            <label className="text-sm font-medium">Local<span className="text-red-500">*</span></label>
+            <label className="text-sm font-medium">
+              Local<span className="text-red-500">*</span>
+            </label>
             <input
               name="local"
               value={formData.local}
@@ -138,19 +186,23 @@ export default function ModalEnvioEvidencia({ isOpen, onClose, onNext }: any) {
             />
           </div>
 
-          <div className="flex flex-col">
-            <label className="text-sm font-medium">Data de Registro<span className="text-red-500">*</span></label>
-            <input
-              name="dateRegister"
-              type="date"
-              value={formData.dateRegister}
+          <div className="flex flex-col w-full">
+            <label className="text-sm font-medium">
+              Descrição<span className="text-red-500">*</span>
+            </label>
+            <textarea
+              name="descricao"
+              value={formData.descricao}
               onChange={handleChange}
               className="p-2 border border-gray-300 rounded"
+              placeholder="Descreva o Caso"
             />
           </div>
 
           <div className="col-span-2 flex flex-col">
-            <label className="text-sm font-medium mb-1">Faça o upload de imagens ou exames:</label>
+            <label className="text-sm font-medium mb-1">
+              Faça o upload de imagens ou exames:
+            </label>
             <label className="flex items-center gap-2 border border-gray-300 rounded px-4 py-2 cursor-pointer w-fit bg-[#E4E7EC]">
               <Upload size={18} />
               <span className="text-sm font-medium">
@@ -167,19 +219,18 @@ export default function ModalEnvioEvidencia({ isOpen, onClose, onNext }: any) {
           </div>
 
           <div className="col-span-2 flex flex-col">
-            <label className="text-sm font-medium">Nome do Caso<span className="text-red-500">*</span></label>
+            <label className="text-sm font-medium">Caso Selecionado</label>
             <input
-              name="caseId"
-              value={formData.caseId}
-              onChange={handleChange}
-              className="p-2 border border-gray-300 rounded"
-              placeholder="ID ou Nome do Caso"
+              type="text"
+              value={casoSelecionado?.titulo}
+              disabled
+              className="p-2 border border-gray-300 rounded bg-gray-100 text-gray-500"
             />
           </div>
 
           <div className="col-span-2 flex justify-between mt-6">
             <button
-              onClick={onClose}
+              onClick={handleClose}
               type="button"
               className="flex items-center gap-2 border border-gray-300 px-4 py-2 rounded text-gray-700 bg-white hover:bg-gray-100"
             >

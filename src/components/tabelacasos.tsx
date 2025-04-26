@@ -4,7 +4,7 @@ import ModalEditarEvidencia from "@/components/modaleditarevidencia";
 import ModalLaudo from "@/components/modallaudo";
 import { useState, useEffect } from "react";
 import { getCaso } from "@/service/casos";
-import { Eye } from "lucide-react";
+import { Eye, View } from "lucide-react";
 
 import { CircleX } from "lucide-react";
 
@@ -22,13 +22,26 @@ export default function TableCases() {
   const [casos, setCasos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [casoSelecionado, setCasoSelecionado] = useState<any | null>(null);
+  const [modalAberto, setModalAberto] = useState<
+    "caso" | "envioEvidencia" | null
+  >(null);
+  const [evidenciaSelecionada, setEvidenciaSelecionada] = useState(null);
 
   const abrirModal = (nome: string) => setModalAtual(nome);
   const fecharModal = () => setModalAtual(null);
 
-  const handleNext = (proximoModal: string) => {
-    setModalAtual(proximoModal);
+  const handleNext = (
+    modalName: "envioEvidencia" | "caso" | "editarEvidencia" | "laudo",
+    data?: any
+  ) => {
+    if (modalName === "editarEvidencia" && data) {
+      setEvidenciaSelecionada(data);
+    } else if (data) {
+      setCasoSelecionado(data);
+    }
+    setModalAtual(modalName);
   };
+
 
   const abrirEditarEvidencia = (casos: string) => {
     setModalAtual("editarEvidencia");
@@ -65,19 +78,23 @@ export default function TableCases() {
     carregarCasos();
   }, []);
 
-
   return (
     <>
       <table className="w-full text-sm ">
         <thead>
           <tr className="bg-[#B6C0C7] text-left">
-            {["ID do Caso", "Titulo" ,"Data", "Status", "Responsáveis", "Ações"].map(
-              (col) => (
-                <th key={col} className="px-4 py-2 font-medium">
-                  {col}
-                </th>
-              )
-            )}
+            {[
+              "ID do Caso",
+              "Titulo",
+              "Data",
+              "Status",
+              "Responsáveis",
+              "Ações",
+            ].map((col) => (
+              <th key={col} className="px-4 py-2 font-medium">
+                {col}
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody>
@@ -110,7 +127,7 @@ export default function TableCases() {
                     <Eye
                       onClick={() => {
                         setCasoSelecionado(casos);
-                        abrirModal("caso")
+                        abrirModal("caso");
                       }}
                       className="cursor-pointer"
                     />
@@ -129,16 +146,21 @@ export default function TableCases() {
         onNext={handleNext}
         casoId={casoSelecionado?._id}
       />
-      <ModalEnvioEvidencia
-        isOpen={modalAtual === "envioEvidencia"}
-        onClose={fecharModal}
-        onNext={() => abrirModal("editarEvidencia")}
-      />
-      <ModalEditarEvidencia
-        isOpen={modalAtual === "editarEvidencia"}
-        onClose={fecharModal}
-        onNext={() => abrirModal("laudo")}
-      />
+      {modalAtual === "envioEvidencia" && casoSelecionado && (
+        <ModalEnvioEvidencia
+          isOpen={modalAtual === "envioEvidencia"}
+          onClose={() => setModalAtual(null)}
+          casoSelecionado={casoSelecionado}
+        />
+      )}
+      {modalAtual === "editarEvidencia" && evidenciaSelecionada && (
+        <ModalEditarEvidencia
+          isOpen
+          onClose={fecharModal}
+          onNext={() => abrirModal("laudo")}
+          evidencia={evidenciaSelecionada}
+        />
+      )}
       <ModalLaudo isOpen={modalAtual === "laudo"} onClose={fecharModal} />
     </>
   );

@@ -2,10 +2,11 @@
 import React, { useState, useEffect } from "react";
 import { getIdCaso } from "@/service/casos";
 import { FileText } from "lucide-react";
+import TabelaEvidencia from "./tabelaevidencia";
 interface ModalCasoProps {
   isOpen: boolean;
   onClose: () => void;
-  onNext: (modalName: string) => void;
+  onNext: (modalName: string, data?: any) => void;
   casoId: string;
 }
 
@@ -18,29 +19,41 @@ export default function ModalCaso({
   const [casoData, setCasoData] = useState<{
     titulo: string;
     descricao: string;
-  }> ({
+  }>({
     titulo: "",
     descricao: "",
   });
+  const [error, setError] = useState("")
+
+  const handleClose = () => {
+    setCasoData({
+      titulo: "",
+      descricao: "",
+    });
+    setError("");
+    onClose();
+  };
+  const [isLoading, setIsLoading] = useState(false);
+
 
   useEffect(() => {
     const fetchCaso = async () => {
-
-      if (!casoId) {
-        console.warn("ID do caso não definido ainda. Abortando fetch.");
+      
+      if (!casoId || casoId.trim() === "") {
+        console.warn("ID do caso inválido. Abortando fetch.");
         return;
       }
-        try {
-          console.log("Chamando fetchCaso para o caso ID:", casoId);
-          const response = await getIdCaso(casoId);
-          console.log("Dado do caso:", response); 
-          setCasoData(response); // aqui está a correção
-          console.log(casoData)
-        } catch (error) {
-          console.error("Erro ao buscar o caso", error);
-        }
+      try {
+        console.log("Chamando fetchCaso para o caso ID:", casoId);
+        const response = await getIdCaso(casoId);
+        console.log("Dado do caso:", response);
+        setCasoData(response); // aqui está a correção
+        console.log(casoData);
+      } catch (error) {
+        console.error("Erro ao buscar o caso", error);
+      }
     };
-  
+
     fetchCaso();
   }, [isOpen, casoId]);
 
@@ -67,7 +80,10 @@ export default function ModalCaso({
           <input
             type="text"
             value={casoData.titulo}
-            onChange={(e) => setCasoData((prev) => ({ ...prev, titulo: e.target.value }))}
+            disabled={isLoading}
+            onChange={(e) =>
+              setCasoData((prev) => ({ ...prev, titulo: e.target.value }))
+            }
             placeholder="Placeholder"
             className="w-full border border-gray-400 rounded px-2 py-1"
           />
@@ -78,8 +94,11 @@ export default function ModalCaso({
           <textarea
             className="w-full border border-gray-400 rounded px-2 py-1"
             placeholder="Escreva aqui"
+            disabled={isLoading}
             value={casoData.descricao}
-            onChange={(e) => setCasoData((prev) => ({...prev, descricao: e.target.value}))}
+            onChange={(e) =>
+              setCasoData((prev) => ({ ...prev, descricao: e.target.value }))
+            }
             rows={3}
           />
         </div>
@@ -88,7 +107,12 @@ export default function ModalCaso({
 
         <div className="flex justify-between items-center mb-3">
           <button
-            onClick={() => onNext("envioEvidencia")}
+            onClick={() =>
+              onNext("envioEvidencia", {
+                ...casoData,
+                caseId: casoId,
+              })
+            }
             className="bg-[#002C49] text-white px-4 py-2 rounded-full font-medium"
           >
             + Nova Evidência
@@ -101,36 +125,13 @@ export default function ModalCaso({
           />
         </div>
 
-        <div className="overflow-hidden rounded border border-gray-300">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-[#B6C0C7] text-gray-800">
-                <th className="text-left px-3 py-2 font-semibold">Título</th>
-                <th className="text-left px-3 py-2 font-semibold">Data</th>
-                <th className="text-left px-3 py-2 font-semibold">Ação</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="bg-[#E8EBED]">
-                <td className="px-3 py-2">Evidência 1</td>
-                <td className="px-3 py-2">01/01/2025</td>
-                <td className="px-3 py-2 flex gap-2">
-                  <button title="Visualizar">👁️</button>
-                  <button
-                    title="Editar"
-                    onClick={() => onNext("editarEvidencia")}
-                  >
-                    ✏️
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+
+
+        <TabelaEvidencia caseId={casoId} onNext={onNext} />
 
         <div className="flex justify-end mt-4">
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="bg-[#A4AFC1] text-white px-4 py-2 rounded"
           >
             Fechar

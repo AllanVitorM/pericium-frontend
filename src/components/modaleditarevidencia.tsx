@@ -1,18 +1,47 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { FileText, Upload } from "lucide-react";
+import { title } from "process";
+
+interface Evidencia {
+  _id: string;
+  title: string;
+  dateRegister: string;
+  local?: string;
+  tipo?: string;
+  peritoResponsavel?: string;
+  descricao?: string;
+}
 
 interface ModalEditarEvidenciaProps {
   isOpen: boolean;
   onClose: () => void;
   onNext: () => void;
+  evidencia: Evidencia | null;
 }
 
 export default function ModalEditarEvidencia({
   isOpen,
   onClose,
   onNext,
+  evidencia,
 }: ModalEditarEvidenciaProps) {
-  if (!isOpen) return null;
+  const [formData, setFormData] = useState<Evidencia>({
+    _id: "",
+    title: "",
+    dateRegister: "",
+    local: "",
+    tipo: "",
+    peritoResponsavel: "",
+    descricao: "",
+  });
+
+  useEffect(() => {
+    if (evidencia) {
+      setFormData(evidencia);
+    }
+  }, [evidencia]);
+
+  if (!isOpen || !evidencia) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">
@@ -30,31 +59,15 @@ export default function ModalEditarEvidencia({
         <div className="grid grid-cols-2 gap-4">
           <div className="flex flex-col">
             <label className="text-sm font-medium">
-              Nome<span className="text-red-500">*</span>
+              Titulo<span className="text-red-500">*</span>
             </label>
             <input
+              value={formData.title}
               className="p-2 border border-gray-300 rounded"
               placeholder="Placeholder"
-            />
-          </div>
-
-          <div className="flex flex-col">
-            <label className="text-sm font-medium">
-              CPF<span className="text-red-500">*</span>
-            </label>
-            <input
-              className="p-2 border border-gray-300 rounded"
-              placeholder="Placeholder"
-            />
-          </div>
-
-          <div className="flex flex-col">
-            <label className="text-sm font-medium">
-              Perito Responsável<span className="text-red-500">*</span>
-            </label>
-            <input
-              className="p-2 border border-gray-300 rounded"
-              placeholder="Placeholder"
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, title: e.target.value }))
+              }
             />
           </div>
 
@@ -64,18 +77,57 @@ export default function ModalEditarEvidencia({
             </label>
             <input
               type="date"
+              value={formData.dateRegister?.slice(0, 10)}
               className="p-2 border border-gray-300 rounded"
               placeholder="Placeholder"
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, dateRegister: e.target.value }))
+              }
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label className="text-sm font-medium">
+              Tipo<span className="text-red-500">*</span>
+            </label>
+            <input
+              className="p-2 border border-gray-300 rounded"
+              value={formData.tipo || ""}
+              placeholder="Placeholder"
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, tipo: e.target.value }))
+              }
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label className="text-sm font-medium">
+              Local<span className="text-red-500">*</span>
+            </label>
+            <input
+              className="p-2 border border-gray-300 rounded"
+              value={formData.local || ""}
+              placeholder="Placeholder"
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, local: e.target.value }))
+              }
             />
           </div>
 
           <div className="flex flex-col col-span-2 sm:col-span-1">
             <label className="text-sm font-medium">
-              Local da Perícia<span className="text-red-500">*</span>
+              Perito Responsável<span className="text-red-500">*</span>
             </label>
             <input
               className="p-2 border border-gray-300 rounded"
+              value={formData.peritoResponsavel || ""}
               placeholder="Placeholder"
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  peritoResponsavel: e.target.value,
+                }))
+              }
             />
           </div>
 
@@ -84,6 +136,10 @@ export default function ModalEditarEvidencia({
             <textarea
               className="p-2 border border-gray-300 rounded h-24 resize-none"
               placeholder="Escreva aqui"
+              value={formData.descricao || ""}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, descricao: e.target.value }))
+              }
             />
           </div>
 
