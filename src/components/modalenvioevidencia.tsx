@@ -222,7 +222,7 @@ export default function ModalEnvioEvidencia({
             <label className="text-sm font-medium">Caso Selecionado</label>
             <input
               type="text"
-              value={casoSelecionado?.titulo}
+              value={casoSelecionado?.title}
               disabled
               className="p-2 border border-gray-300 rounded bg-gray-100 text-gray-500"
             />
