@@ -4,7 +4,7 @@ import ModalEditarEvidencia from "@/components/modaleditarevidencia";
 import ModalLaudo from "@/components/modallaudo";
 import { useState, useEffect } from "react";
 import { getCaso } from "@/service/casos";
-import { Eye } from "lucide-react";
+import { Eye, View } from "lucide-react";
 
 import { CircleX } from "lucide-react";
 
@@ -25,17 +25,23 @@ export default function TableCases() {
   const [modalAberto, setModalAberto] = useState<
     "caso" | "envioEvidencia" | null
   >(null);
+  const [evidenciaSelecionada, setEvidenciaSelecionada] = useState(null);
 
   const abrirModal = (nome: string) => setModalAtual(nome);
   const fecharModal = () => setModalAtual(null);
 
   const handleNext = (
     modalName: "envioEvidencia" | "caso" | "editarEvidencia" | "laudo",
-    casoData?: any
+    data?: any
   ) => {
-    if (casoData) setCasoSelecionado(casoData);
+    if (modalName === "editarEvidencia" && data) {
+      setEvidenciaSelecionada(data);
+    } else if (data) {
+      setCasoSelecionado(data);
+    }
     setModalAtual(modalName);
   };
+
 
   const abrirEditarEvidencia = (casos: string) => {
     setModalAtual("editarEvidencia");
@@ -147,11 +153,14 @@ export default function TableCases() {
           casoSelecionado={casoSelecionado}
         />
       )}
-      <ModalEditarEvidencia
-        isOpen={modalAtual === "editarEvidencia"}
-        onClose={fecharModal}
-        onNext={() => abrirModal("laudo")}
-      />
+      {modalAtual === "editarEvidencia" && evidenciaSelecionada && (
+        <ModalEditarEvidencia
+          isOpen
+          onClose={fecharModal}
+          onNext={() => abrirModal("laudo")}
+          evidencia={evidenciaSelecionada}
+        />
+      )}
       <ModalLaudo isOpen={modalAtual === "laudo"} onClose={fecharModal} />
     </>
   );

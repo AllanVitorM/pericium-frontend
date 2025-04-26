@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Upload } from "lucide-react";
 import { criarEvidencia } from "@/service/evidencia";
 
-
-
-export default function ModalEnvioEvidencia({ isOpen, onClose, casoSelecionado}: {
+export default function ModalEnvioEvidencia({
+  isOpen,
+  onClose,
+  casoSelecionado,
+}: {
   isOpen: boolean;
   onClose: () => void;
   casoSelecionado: {
@@ -27,12 +29,13 @@ export default function ModalEnvioEvidencia({ isOpen, onClose, casoSelecionado}:
     caseId: "",
   });
 
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -49,20 +52,22 @@ export default function ModalEnvioEvidencia({ isOpen, onClose, casoSelecionado}:
     }
   };
 
-
-
-
- const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.title || !formData.descricao || !formData.tipo || !formData.dateRegister) {
-    setLoading(true);
-    setError("")
-}
-    const token = localStorage.getItem('token');
+    if (
+      !formData.title ||
+      !formData.descricao ||
+      !formData.tipo ||
+      !formData.dateRegister
+    ) {
+      setLoading(true);
+      setError("");
+    }
+    const token = localStorage.getItem("token");
 
     if (!token) {
       setError("Token não encontrado");
-      setLoading(false)
+      setLoading(false);
       return;
     }
 
@@ -71,14 +76,16 @@ export default function ModalEnvioEvidencia({ isOpen, onClose, casoSelecionado}:
     formDataToSend.append("descricao", formData.descricao);
     formDataToSend.append("tipo", formData.tipo);
     formDataToSend.append("local", formData.local);
-    formDataToSend.append("dateRegister", new Date(formData.dateRegister).toISOString());
+    formDataToSend.append(
+      "dateRegister",
+      new Date(formData.dateRegister).toISOString()
+    );
     formDataToSend.append("caseId", formData.caseId);
-    
 
     if (formData.imageFile) {
-      formDataToSend.append("file", formData.imageFile)
+      formDataToSend.append("file", formData.imageFile);
     }
-    console.log("teste de aparencia: ",[...formDataToSend]);
+    console.log("teste de aparencia: ", [...formDataToSend]);
 
     try {
       await criarEvidencia(formDataToSend);
@@ -117,7 +124,6 @@ export default function ModalEnvioEvidencia({ isOpen, onClose, casoSelecionado}:
     }
   }, [casoSelecionado]);
 
-
   if (!isOpen) return null;
 
   return (
@@ -127,7 +133,9 @@ export default function ModalEnvioEvidencia({ isOpen, onClose, casoSelecionado}:
 
         <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
           <div className="flex flex-col">
-            <label className="text-sm font-medium">Título<span className="text-red-500">*</span></label>
+            <label className="text-sm font-medium">
+              Título<span className="text-red-500">*</span>
+            </label>
             <input
               name="title"
               value={formData.title}
@@ -138,18 +146,24 @@ export default function ModalEnvioEvidencia({ isOpen, onClose, casoSelecionado}:
           </div>
 
           <div className="flex flex-col">
-            <label className="text-sm font-medium">Descrição<span className="text-red-500">*</span></label>
+            <label className="text-sm font-medium">
+              Data de Registro<span className="text-red-500">*</span>
+            </label>
             <input
-              name="descricao"
-              value={formData.descricao}
-              onChange={handleChange}
+              name="dateRegister"
+              type="date"
+              value={formData.dateRegister || ""}
+              onChange={(e) =>
+                setFormData({ ...formData, dateRegister: e.target.value })
+              }
               className="p-2 border border-gray-300 rounded"
-              placeholder="Descreva o Caso"
             />
           </div>
 
           <div className="flex flex-col">
-            <label className="text-sm font-medium">Tipo<span className="text-red-500">*</span></label>
+            <label className="text-sm font-medium">
+              Tipo<span className="text-red-500">*</span>
+            </label>
             <input
               name="tipo"
               value={formData.tipo}
@@ -160,7 +174,9 @@ export default function ModalEnvioEvidencia({ isOpen, onClose, casoSelecionado}:
           </div>
 
           <div className="flex flex-col">
-            <label className="text-sm font-medium">Local<span className="text-red-500">*</span></label>
+            <label className="text-sm font-medium">
+              Local<span className="text-red-500">*</span>
+            </label>
             <input
               name="local"
               value={formData.local}
@@ -170,19 +186,23 @@ export default function ModalEnvioEvidencia({ isOpen, onClose, casoSelecionado}:
             />
           </div>
 
-          <div className="flex flex-col">
-            <label className="text-sm font-medium">Data de Registro<span className="text-red-500">*</span></label>
-            <input
-              name="dateRegister"
-              type="date"
-              value={formData.dateRegister || ''}
-              onChange={(e) => setFormData({ ...formData, dateRegister: e.target.value})}
+          <div className="flex flex-col w-full">
+            <label className="text-sm font-medium">
+              Descrição<span className="text-red-500">*</span>
+            </label>
+            <textarea
+              name="descricao"
+              value={formData.descricao}
+              onChange={handleChange}
               className="p-2 border border-gray-300 rounded"
+              placeholder="Descreva o Caso"
             />
           </div>
 
           <div className="col-span-2 flex flex-col">
-            <label className="text-sm font-medium mb-1">Faça o upload de imagens ou exames:</label>
+            <label className="text-sm font-medium mb-1">
+              Faça o upload de imagens ou exames:
+            </label>
             <label className="flex items-center gap-2 border border-gray-300 rounded px-4 py-2 cursor-pointer w-fit bg-[#E4E7EC]">
               <Upload size={18} />
               <span className="text-sm font-medium">

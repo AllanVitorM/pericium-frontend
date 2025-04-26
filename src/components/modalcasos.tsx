@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { getIdCaso } from "@/service/casos";
 import { FileText } from "lucide-react";
+import TabelaEvidencia from "./tabelaevidencia";
 interface ModalCasoProps {
   isOpen: boolean;
   onClose: () => void;
@@ -124,32 +125,9 @@ export default function ModalCaso({
           />
         </div>
 
-        <div className="overflow-hidden rounded border border-gray-300">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-[#B6C0C7] text-gray-800">
-                <th className="text-left px-3 py-2 font-semibold">Título</th>
-                <th className="text-left px-3 py-2 font-semibold">Data</th>
-                <th className="text-left px-3 py-2 font-semibold">Ação</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="bg-[#E8EBED]">
-                <td className="px-3 py-2">Evidência 1</td>
-                <td className="px-3 py-2">01/01/2025</td>
-                <td className="px-3 py-2 flex gap-2">
-                  <button title="Visualizar">👁️</button>
-                  <button
-                    title="Editar"
-                    onClick={() => onNext("editarEvidencia")}
-                  >
-                    ✏️
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+
+
+        <TabelaEvidencia caseId={casoId} onNext={onNext} />
 
         <div className="flex justify-end mt-4">
           <button

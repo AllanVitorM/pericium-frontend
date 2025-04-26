@@ -48,6 +48,21 @@ interface CreateEvidenciaDTO {
     return response.data
   }
 
+  export const getEvidenciaByCaseId = async(caseId: string) => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+        throw new Error("Token JWT não encontrado.");
+    }
+
+    const response = await api.get(`/evidencias/bycase/${caseId}`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        },
+    })
+    return response.data
+  }
+
   export const updateEvidencia = async(caseId: string) => {
     const token = localStorage.getItem("token");
 
