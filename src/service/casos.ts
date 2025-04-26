@@ -65,35 +65,34 @@
     });
     return response.data
   }
-
-  export const updateCaso = async () => {
+  export const updateCaso = async (casoId: string, casoData: any) => {
     const token = localStorage.getItem("token");
-
+  
     if (!token) {
       throw new Error("Token JWT não encontrado.");
     }
-
-    const response = await api.put("/cases/:id", {
+  
+    const response = await api.put(`/cases/${casoId}`, casoData, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
+  
     return response.data;
   };
-
-
-  export const deleteCaso = async () => {
+  
+  export const deleteCaso = async (casoId: string) => {
     const token = localStorage.getItem("token");
-
+  
     if (!token) {
       throw new Error("Token JWT não encontrado.");
     }
-
-    const response = await api.get("/cases/:id", {
+  
+    const response = await api.delete(`/cases/${casoId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
+  
     return response.data;
   };
-
