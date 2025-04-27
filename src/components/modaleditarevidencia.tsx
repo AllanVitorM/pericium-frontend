@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { FileText, Upload } from "lucide-react";
-import { title } from "process";
 import { updateEvidencia, deleteEvidencia } from "@/service/evidencia";
 
 interface Evidencia {
@@ -43,6 +42,7 @@ export default function ModalEditarEvidencia({
   }, [evidencia]);
 
   if (!isOpen || !evidencia) return null;
+
   const handleUpdate = async () => {
     try {
       await updateEvidencia(formData._id, formData);
@@ -53,43 +53,29 @@ export default function ModalEditarEvidencia({
       alert("Erro ao atualizar evidência: " + (error.response?.data?.message || error.message));
     }
   };
-  
-
-  const handleDelete = async (id: string) => {
-    if (confirm("Tem certeza que deseja deletar esta evidência?")) {
-      try {
-        await deleteEvidencia(id);
-        alert("Evidência deletada com sucesso!");
-        // Aqui você pode atualizar a lista para remover a evidência da tela
-      } catch (error) {
-        console.error("Erro ao deletar evidência:", error);
-        alert("Erro ao deletar evidência.");
-      }
-    }
-  };
 
   return (
-    <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-[#F5F5F5] p-6 rounded-lg w-[640px] relative">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-[#F5F5F5] p-6 rounded-lg w-full max-w-2xl relative overflow-y-auto max-h-[90vh]">
         {/* Header */}
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
           <h2 className="text-2xl font-bold">Editar Evidência</h2>
-          <button className="flex items-center gap-2 bg-[#002D62] text-white text-sm px-4 py-2 rounded">
+          <button className="flex items-center gap-2 bg-[#002D62] text-white text-sm px-4 py-2 rounded hover:bg-[#001f47]">
             <FileText size={16} />
             Laudo
           </button>
         </div>
 
         {/* Form */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="flex flex-col">
             <label className="text-sm font-medium">
-              Titulo<span className="text-red-500">*</span>
+              Título <span className="text-red-500">*</span>
             </label>
             <input
               value={formData.title}
               className="p-2 border border-gray-300 rounded"
-              placeholder="Placeholder"
+              placeholder="Título da evidência"
               onChange={(e) =>
                 setFormData((prev) => ({ ...prev, title: e.target.value }))
               }
@@ -98,13 +84,12 @@ export default function ModalEditarEvidencia({
 
           <div className="flex flex-col">
             <label className="text-sm font-medium">
-              Data da perícia<span className="text-red-500">*</span>
+              Data da perícia <span className="text-red-500">*</span>
             </label>
             <input
               type="date"
               value={formData.dateRegister?.slice(0, 10)}
               className="p-2 border border-gray-300 rounded"
-              placeholder="Placeholder"
               onChange={(e) =>
                 setFormData((prev) => ({ ...prev, dateRegister: e.target.value }))
               }
@@ -113,12 +98,12 @@ export default function ModalEditarEvidencia({
 
           <div className="flex flex-col">
             <label className="text-sm font-medium">
-              Tipo<span className="text-red-500">*</span>
+              Tipo <span className="text-red-500">*</span>
             </label>
             <input
               className="p-2 border border-gray-300 rounded"
               value={formData.tipo || ""}
-              placeholder="Placeholder"
+              placeholder="Tipo da evidência"
               onChange={(e) =>
                 setFormData((prev) => ({ ...prev, tipo: e.target.value }))
               }
@@ -127,26 +112,26 @@ export default function ModalEditarEvidencia({
 
           <div className="flex flex-col">
             <label className="text-sm font-medium">
-              Local<span className="text-red-500">*</span>
+              Local <span className="text-red-500">*</span>
             </label>
             <input
               className="p-2 border border-gray-300 rounded"
               value={formData.local || ""}
-              placeholder="Placeholder"
+              placeholder="Local da evidência"
               onChange={(e) =>
                 setFormData((prev) => ({ ...prev, local: e.target.value }))
               }
             />
           </div>
 
-          <div className="flex flex-col col-span-2 sm:col-span-1">
+          <div className="flex flex-col md:col-span-2">
             <label className="text-sm font-medium">
-              Perito Responsável<span className="text-red-500">*</span>
+              Perito Responsável <span className="text-red-500">*</span>
             </label>
             <input
               className="p-2 border border-gray-300 rounded"
               value={formData.peritoResponsavel || ""}
-              placeholder="Placeholder"
+              placeholder="Nome do perito"
               onChange={(e) =>
                 setFormData((prev) => ({
                   ...prev,
@@ -156,11 +141,11 @@ export default function ModalEditarEvidencia({
             />
           </div>
 
-          <div className="col-span-2 flex flex-col">
+          <div className="flex flex-col md:col-span-2">
             <label className="text-sm font-medium">Descrição</label>
             <textarea
               className="p-2 border border-gray-300 rounded h-24 resize-none"
-              placeholder="Escreva aqui"
+              placeholder="Descrição da evidência"
               value={formData.descricao || ""}
               onChange={(e) =>
                 setFormData((prev) => ({ ...prev, descricao: e.target.value }))
@@ -168,7 +153,7 @@ export default function ModalEditarEvidencia({
             />
           </div>
 
-          <div className="col-span-2 flex flex-col">
+          <div className="flex flex-col md:col-span-2">
             <label className="text-sm font-medium mb-1">
               Faça o upload de imagens ou exames:
             </label>
@@ -181,21 +166,19 @@ export default function ModalEditarEvidencia({
         </div>
 
         {/* Footer */}
-        <div className="flex justify-between mt-6">
+        <div className="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4">
           <button
             onClick={onClose}
-            className="flex items-center gap-2 border border-gray-300 px-4 py-2 rounded text-gray-700 bg-white hover:bg-gray-100"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 border border-gray-300 px-4 py-2 rounded text-gray-700 bg-white hover:bg-gray-100"
           >
             &larr; Cancelar
           </button>
           <button
             onClick={handleUpdate}
-            className="flex items-center gap-2 bg-[#002D62] text-white px-6 py-2 rounded hover:bg-[#001f47]"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 bg-[#002D62] text-white px-6 py-2 rounded hover:bg-[#001f47]"
           >
             Enviar &rarr;
           </button>
-
-
         </div>
       </div>
     </div>

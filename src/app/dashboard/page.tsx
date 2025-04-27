@@ -1,11 +1,14 @@
 'use client';
 
+
 import Image from "next/image";
 import logo from "@/assets/Pericium_azul.png";
 import { useEffect, useState } from "react";
 import ChartClient from '@/components/ChartClient';
 import api from "@/service/api";
-
+import Sidebar from "@/components/sidebar";
+import AdminHeader from "@/components/headeradm";
+        
 interface DashboardData {
   casosHoje: number;
   emAnalise: number;
@@ -13,6 +16,7 @@ interface DashboardData {
   casosPorMes: { mes: string; pendentes: number; concluidos: number }[];
   casosPorTipo: { tipo: string; quantidade: number }[];
 }
+
 
 export default function DashboardPage() {
   const [dashboardData, setDashboardData] = useState<DashboardData>({
@@ -93,9 +97,11 @@ export default function DashboardPage() {
           <span><strong>Cargo:</strong> Administrador</span>
         </div>
 
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold">Dashboard</h1>
-        </div>
+
+      <div className="lg:w-64">
+                  <Sidebar />
+      </div>
+
 
         {dashboardData.casosPorTipo.length > 0 || dashboardData.casosPorMes.length > 0 ? (
           <ChartClient
@@ -124,12 +130,30 @@ export default function DashboardPage() {
           <div className="bg-white p-4 rounded-lg shadow border">
             <p className="text-gray-500">Em Análise</p>
             <p className="text-2xl font-bold">{dashboardData.emAnalise}</p>
+
+
           </div>
-          <div className="bg-white p-4 rounded-lg shadow border">
-            <p className="text-gray-500">Concluídos</p>
-            <p className="text-2xl font-bold">{dashboardData.concluidos}</p>
+          {/* Gráfico principal */}
+          <ChartClient barData={dashboardData.casosPorMes} pieData={[
+            { name: 'Finalizados', value: dashboardData.concluidos },
+            { name: 'Em andamento', value: dashboardData.emAnalise },
+            { name: 'Pendentes', value: dashboardData.casosHoje },
+          ]} />
+          {/* Cards de status */}
+          <div className="grid grid-cols-3 gap-4 mt-8">
+            <div className="bg-white p-4 rounded-lg shadow border">
+              <p className="text-gray-500">Casos Hoje</p>
+              <p className="text-2xl font-bold">{dashboardData.casosHoje}</p>
+            </div>
+            <div className="bg-white p-4 rounded-lg shadow border">
+              <p className="text-gray-500">Em Análise</p>
+              <p className="text-2xl font-bold">{dashboardData.emAnalise}</p>
+            </div>
+            <div className="bg-white p-4 rounded-lg shadow border">
+              <p className="text-gray-500">Concluídos</p>
+              <p className="text-2xl font-bold">{dashboardData.concluidos}</p>
+            </div>
           </div>
-        </div>
       </main>
     </div>
   );
