@@ -68,12 +68,11 @@ export default function ModalNovoCaso({ isOpen, onClose }: Props) {
     }
   };
 
-
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl h-auto p-6 w-lg ">
+      <div className="bg-white rounded-xl p-6 w-full max-w-lg sm:w-11/12 md:w-8/12 lg:w-[600px]">
         <div className="flex justify-center">
           <h2 className="text-3xl font-bold mb-4">Registrar Caso</h2>
         </div>

@@ -33,14 +33,14 @@ export default function AdminHeader() {
   }
 
   return (
-    <div className="flex justify-between items-center bg-[#B6C0C7] px-6 py-2 rounded-full mb-6 text-sm">
-      <span>
+    <div className="flex flex-wrap justify-between items-center bg-[#B6C0C7] px-6 py-2 rounded-full mb-6 text-sm space-y-2 lg:space-y-0 lg:flex-row">
+      <span className="flex-1 min-w-[150px] sm:min-w-[200px] lg:min-w-[150px]">
         <strong>ID:</strong> {user.id}
       </span>
-      <span>
+      <span className="flex-1 min-w-[150px] sm:min-w-[200px] lg:min-w-[150px]">
         <strong>Nome:</strong> {user.nome}
       </span>
-      <span>
+      <span className="flex-1 min-w-[150px] sm:min-w-[200px] lg:min-w-[150px]">
         <strong>Cargo:</strong> {user.cargo}
       </span>
     </div>

@@ -17,13 +17,13 @@ export default function CasosPage() {
     <ProtectedRoute allowedRoles={["ADMIN", "PERITO", "ASSISTENTE"]}>
       <div className="flex h-screen">
 
-        <div className="w-64">
-          <Sidebar />
-        </div>
+          <div className="lg:w-64">
+            <Sidebar />
+          </div>
 
         <main className="flex-1 bg-white p-6 overflow-y-auto">
               
-          <AdminHeader id="242424" nome="Matheus Ramos" cargo="Administrador"/>
+          <AdminHeader/>
           <ButtonandSearch text="Novo caso" onClick={() => abrirModal("novoCaso")} type="button"/>
             
           <div className="overflow-auto rounded-lg border border-gray-300">

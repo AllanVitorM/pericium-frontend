@@ -4,9 +4,7 @@ import ModalEditarEvidencia from "@/components/modaleditarevidencia";
 import ModalLaudo from "@/components/modallaudo";
 import { useState, useEffect } from "react";
 import { getCaso } from "@/service/casos";
-import { Eye, View } from "lucide-react";
-
-import { CircleX } from "lucide-react";
+import { Eye, CircleX } from "lucide-react";
 
 function parseJwt(token: string): any {
   try {
@@ -22,9 +20,6 @@ export default function TableCases() {
   const [casos, setCasos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [casoSelecionado, setCasoSelecionado] = useState<any | null>(null);
-  const [modalAberto, setModalAberto] = useState<
-    "caso" | "envioEvidencia" | null
-  >(null);
   const [evidenciaSelecionada, setEvidenciaSelecionada] = useState(null);
 
   const abrirModal = (nome: string) => setModalAtual(nome);
@@ -40,11 +35,6 @@ export default function TableCases() {
       setCasoSelecionado(data);
     }
     setModalAtual(modalName);
-  };
-
-
-  const abrirEditarEvidencia = (casos: string) => {
-    setModalAtual("editarEvidencia");
   };
 
   useEffect(() => {
@@ -80,66 +70,73 @@ export default function TableCases() {
 
   return (
     <>
-      <table className="w-full text-sm ">
-        <thead>
-          <tr className="bg-[#B6C0C7] text-left">
-            {[
-              "ID do Caso",
-              "Titulo",
-              "Data",
-              "Status",
-              "Responsáveis",
-              "Ações",
-            ].map((col) => (
-              <th key={col} className="px-4 py-2 font-medium">
-                {col}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {loading ? (
-            <tr>
-              <td colSpan={8} className="text-center py-4">
-                {" "}
-                Carregando Caso...
-              </td>
+      {/* Wrapper para tornar a tabela responsiva */}
+      <div className="w-full overflow-x-auto">
+        <table className="min-w-full text-sm">
+          <thead>
+            <tr className="bg-[#B6C0C7] text-left">
+              {[
+                "ID do Caso",
+                "Título",
+                "Data",
+                "Status",
+                "Responsáveis",
+                "Ações",
+              ].map((col) => (
+                <th key={col} className="px-4 py-3 font-semibold whitespace-nowrap">
+                  {col}
+                </th>
+              ))}
             </tr>
-          ) : casos.length === 0 ? (
-            <tr>
-              <td colSpan={8} className="text-center py-4">
-                Nenhum caso encontrado.
-              </td>
-            </tr>
-          ) : (
-            casos.map((casos, i) => (
-              <tr
-                key={casos._id || i}
-                className={i % 2 == 0 ? "bg-[#E8EBED]" : "bg-[#B6C0C7]"}
-              >
-                <td>{casos._id}</td>
-                <td>{casos.titulo}</td>
-                <td>{new Date(casos.dataAbertura).toLocaleDateString()}</td>
-                <td>{casos.status}</td>
-                <td>{casos.userId?.name || "-"}</td>
-                <td>
-                  <div className="flex gap-3">
-                    <Eye
-                      onClick={() => {
-                        setCasoSelecionado(casos);
-                        abrirModal("caso");
-                      }}
-                      className="cursor-pointer"
-                    />
-                    <CircleX />
-                  </div>
+          </thead>
+          <tbody>
+            {loading ? (
+              <tr>
+                <td colSpan={6} className="text-center py-6">
+                  Carregando Caso...
                 </td>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+            ) : casos.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="text-center py-6">
+                  Nenhum caso encontrado.
+                </td>
+              </tr>
+            ) : (
+              casos.map((caso, i) => (
+                <tr
+                  key={caso._id || i}
+                  className={i % 2 === 0 ? "bg-[#E8EBED]" : "bg-[#B6C0C7]"}
+                >
+                  <td className="px-4 py-3 whitespace-nowrap">{caso._id}</td>
+                  <td className="px-4 py-3 whitespace-nowrap">{caso.titulo}</td>
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    {new Date(caso.dataAbertura).toLocaleDateString()}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap">{caso.status}</td>
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    {caso.userId?.name || "-"}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <div className="flex gap-3">
+                      <Eye
+                        onClick={() => {
+                          setCasoSelecionado(caso);
+                          abrirModal("caso");
+                        }}
+                        className="cursor-pointer"
+                      />
+                      <CircleX className="cursor-pointer" />
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
 
+      {/* Modais */}
       <ModalCaso
         isOpen={modalAtual === "caso"}
         onClose={fecharModal}
@@ -148,7 +145,7 @@ export default function TableCases() {
       />
       {modalAtual === "envioEvidencia" && casoSelecionado && (
         <ModalEnvioEvidencia
-          isOpen={modalAtual === "envioEvidencia"}
+          isOpen
           onClose={() => setModalAtual(null)}
           casoSelecionado={casoSelecionado}
         />
@@ -161,7 +158,10 @@ export default function TableCases() {
           evidencia={evidenciaSelecionada}
         />
       )}
-      <ModalLaudo isOpen={modalAtual === "laudo"} onClose={fecharModal} />
+      <ModalLaudo
+        isOpen={modalAtual === "laudo"}
+        onClose={fecharModal}
+      />
     </>
   );
 }

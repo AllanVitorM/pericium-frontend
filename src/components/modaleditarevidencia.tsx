@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { FileText, Upload } from "lucide-react";
-import { title } from "process";
 
 interface Evidencia {
   _id: string;
@@ -44,27 +43,27 @@ export default function ModalEditarEvidencia({
   if (!isOpen || !evidencia) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-[#F5F5F5] p-6 rounded-lg w-[640px] relative">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
+      <div className="bg-[#F5F5F5] p-6 rounded-lg w-full max-w-2xl relative">
         {/* Header */}
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
           <h2 className="text-2xl font-bold">Editar Evidência</h2>
-          <button className="flex items-center gap-2 bg-[#002D62] text-white text-sm px-4 py-2 rounded">
+          <button className="flex items-center gap-2 bg-[#002D62] text-white text-sm px-4 py-2 rounded hover:bg-[#001f47]">
             <FileText size={16} />
             Laudo
           </button>
         </div>
 
         {/* Form */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="flex flex-col">
             <label className="text-sm font-medium">
-              Titulo<span className="text-red-500">*</span>
+              Título<span className="text-red-500">*</span>
             </label>
             <input
               value={formData.title}
               className="p-2 border border-gray-300 rounded"
-              placeholder="Placeholder"
+              placeholder="Título"
               onChange={(e) =>
                 setFormData((prev) => ({ ...prev, title: e.target.value }))
               }
@@ -79,7 +78,7 @@ export default function ModalEditarEvidencia({
               type="date"
               value={formData.dateRegister?.slice(0, 10)}
               className="p-2 border border-gray-300 rounded"
-              placeholder="Placeholder"
+              placeholder="Data"
               onChange={(e) =>
                 setFormData((prev) => ({ ...prev, dateRegister: e.target.value }))
               }
@@ -91,9 +90,9 @@ export default function ModalEditarEvidencia({
               Tipo<span className="text-red-500">*</span>
             </label>
             <input
-              className="p-2 border border-gray-300 rounded"
               value={formData.tipo || ""}
-              placeholder="Placeholder"
+              className="p-2 border border-gray-300 rounded"
+              placeholder="Tipo"
               onChange={(e) =>
                 setFormData((prev) => ({ ...prev, tipo: e.target.value }))
               }
@@ -105,23 +104,23 @@ export default function ModalEditarEvidencia({
               Local<span className="text-red-500">*</span>
             </label>
             <input
-              className="p-2 border border-gray-300 rounded"
               value={formData.local || ""}
-              placeholder="Placeholder"
+              className="p-2 border border-gray-300 rounded"
+              placeholder="Local"
               onChange={(e) =>
                 setFormData((prev) => ({ ...prev, local: e.target.value }))
               }
             />
           </div>
 
-          <div className="flex flex-col col-span-2 sm:col-span-1">
+          <div className="flex flex-col md:col-span-2">
             <label className="text-sm font-medium">
               Perito Responsável<span className="text-red-500">*</span>
             </label>
             <input
-              className="p-2 border border-gray-300 rounded"
               value={formData.peritoResponsavel || ""}
-              placeholder="Placeholder"
+              className="p-2 border border-gray-300 rounded"
+              placeholder="Perito Responsável"
               onChange={(e) =>
                 setFormData((prev) => ({
                   ...prev,
@@ -131,23 +130,23 @@ export default function ModalEditarEvidencia({
             />
           </div>
 
-          <div className="col-span-2 flex flex-col">
+          <div className="flex flex-col md:col-span-2">
             <label className="text-sm font-medium">Descrição</label>
             <textarea
-              className="p-2 border border-gray-300 rounded h-24 resize-none"
-              placeholder="Escreva aqui"
               value={formData.descricao || ""}
+              className="p-2 border border-gray-300 rounded h-24 resize-none"
+              placeholder="Descrição"
               onChange={(e) =>
                 setFormData((prev) => ({ ...prev, descricao: e.target.value }))
               }
             />
           </div>
 
-          <div className="col-span-2 flex flex-col">
+          <div className="flex flex-col md:col-span-2">
             <label className="text-sm font-medium mb-1">
               Faça o upload de imagens ou exames:
             </label>
-            <label className="flex items-center gap-2 border border-gray-300 rounded px-4 py-2 cursor-pointer w-fit bg-[#E4E7EC]">
+            <label className="flex items-center gap-2 border border-gray-300 rounded px-4 py-2 cursor-pointer w-fit bg-[#E4E7EC] hover:bg-[#d9dce0]">
               <Upload size={18} />
               <span className="text-sm font-medium">Upload</span>
               <input type="file" className="hidden" />
@@ -156,16 +155,16 @@ export default function ModalEditarEvidencia({
         </div>
 
         {/* Footer */}
-        <div className="flex justify-between mt-6">
+        <div className="flex flex-col-reverse md:flex-row justify-between gap-4 mt-6">
           <button
             onClick={onClose}
-            className="flex items-center gap-2 border border-gray-300 px-4 py-2 rounded text-gray-700 bg-white hover:bg-gray-100"
+            className="flex items-center justify-center gap-2 border border-gray-300 px-4 py-2 rounded text-gray-700 bg-white hover:bg-gray-100 w-full md:w-auto"
           >
             &larr; Cancelar
           </button>
           <button
             onClick={onNext}
-            className="flex items-center gap-2 bg-[#002D62] text-white px-6 py-2 rounded hover:bg-[#001f47]"
+            className="flex items-center justify-center gap-2 bg-[#002D62] text-white px-6 py-2 rounded hover:bg-[#001f47] w-full md:w-auto"
           >
             Enviar &rarr;
           </button>
