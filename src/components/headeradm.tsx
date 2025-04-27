@@ -41,6 +41,7 @@ export default function AdminHeader() {
         <strong>Nome:</strong> {user.nome}
       </span>
       <span className="flex-1 min-w-[150px] sm:min-w-[200px] lg:min-w-[150px]">
+
         <strong>Cargo:</strong> {user.cargo}
       </span>
     </div>

@@ -5,7 +5,7 @@ import { getUsers } from "@/service/user"; // Ajuste o caminho se necessário
 import { Eye, Pencil, CircleX } from "lucide-react"; // Importando os ícones corretos
 
 interface User {
-  _id: string;
+  id: string;
   name: string;
   email: string;
   cpf: string;
@@ -32,6 +32,7 @@ export default function TableSection() {
   }, []);
 
   return (
+
     <section className="w-full">
       <div className="w-full overflow-x-auto rounded-lg border border-gray-300">
         <table className="min-w-full text-sm">
@@ -49,6 +50,7 @@ export default function TableSection() {
             {loading ? (
               <tr>
                 <td colSpan={5} className="px-4 py-6 text-center">
+
                   Carregando usuários...
                 </td>
               </tr>
@@ -64,6 +66,7 @@ export default function TableSection() {
                   key={user._id}
                   className={i % 2 === 0 ? "bg-[#E8EBED]" : "bg-[#B6C0C7]"}
                 >
+
                   <td className="px-2 sm:px-4 py-3 whitespace-nowrap">{user._id}</td>
                   <td className="px-2 sm:px-4 py-3 whitespace-nowrap">{user.name}</td>
                   <td className="px-2 sm:px-4 py-3 whitespace-nowrap">{user.role}</td>
