@@ -1,10 +1,14 @@
 'use client';
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, CartesianGrid, Legend } from 'recharts';
 
 // Tipos para as props
 interface ChartClientProps {
-  barData: { name: string; casos: number }[];
+  barData: {
+    name: string;
+    pendentes: number;
+    concluidos: number;
+  }[];
   pieData: { name: string; value: number }[];
 }
 
@@ -16,12 +20,15 @@ const ChartClient: React.FC<ChartClientProps> = ({ barData, pieData }) => {
       <div className="bg-white p-4 rounded-2xl shadow-md">
         <h3 className="text-lg font-semibold mb-4">Casos por mês</h3>
         <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={barData}>
+          <LineChart data={barData}>
+            <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" />
             <YAxis />
             <Tooltip />
-            <Bar dataKey="casos" fill="#6366f1" radius={[4, 4, 0, 0]} />
-          </BarChart>
+            <Legend />
+            <Line type="monotone" dataKey="pendentes" stroke="#8884d8" />
+            <Line type="monotone" dataKey="concluidos" stroke="#82ca9d" />
+          </LineChart>
         </ResponsiveContainer>
       </div>
       <div className="bg-white p-4 rounded-2xl shadow-md">
