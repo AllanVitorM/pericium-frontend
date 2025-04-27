@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 import { criarCaso } from "@/service/casos";
 
@@ -6,7 +7,7 @@ function parseJwt(token: string): any {
   try {
     return JSON.parse(atob(token.split('.')[1]));
   } catch (e) {
-    console.error("Erro ao decodificar token jwt", e)
+    console.error("Erro ao decodificar token jwt", e);
     return null;
   }
 }
@@ -17,18 +18,12 @@ interface Props {
 }
 
 export default function ModalNovoCaso({ isOpen, onClose }: Props) {
-  const [formData, setFormData] = useState<{
-    titulo: string;
-    descricao: string;
-    status: "PENDENTE" | "EM ANDAMENTO" | "CONCLUIDO";
-    dataAbertura: string;
-    userId: string
-  }>({
+  const [formData, setFormData] = useState({
     titulo: "",
     descricao: "",
-    status: "PENDENTE",
+    status: "PENDENTE" as "PENDENTE" | "EM ANDAMENTO" | "CONCLUIDO",
     dataAbertura: "",
-    userId: ""
+    userId: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -43,11 +38,12 @@ export default function ModalNovoCaso({ isOpen, onClose }: Props) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError("")
+    setError("");
+
     const token = localStorage.getItem('token');
     if (!token) {
       setError("Token não encontrado");
-      setLoading(false)
+      setLoading(false);
       return;
     }
 
@@ -59,7 +55,7 @@ export default function ModalNovoCaso({ isOpen, onClose }: Props) {
         ...formData,
         dataAbertura: new Date(formData.dataAbertura).toISOString(),
         userId: userId,
-      })
+      });
       onClose();
     } catch (error) {
       console.log("Erro ao criar caso", error);
@@ -68,22 +64,23 @@ export default function ModalNovoCaso({ isOpen, onClose }: Props) {
     }
   };
 
-
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl h-auto p-6 w-lg ">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-lg">
         <div className="flex justify-center">
-          <h2 className="text-3xl font-bold mb-4">Registrar Caso</h2>
+          <h2 className="text-3xl font-bold mb-6 text-center">Registrar Caso</h2>
         </div>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          {/* Título */}
           <div>
-            <label className="text-lg font-semibold">Título*</label>
+            <label className="text-base font-semibold">Título*</label>
             <input
               type="text"
-              placeholder="Titulo"
-              className="w-full border rounded px-3 py-1 mt-1"
+              placeholder="Título"
+              className="w-full border border-gray-300 rounded-md px-4 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
               name="titulo"
               value={formData.titulo}
               onChange={handleChange}
@@ -91,10 +88,11 @@ export default function ModalNovoCaso({ isOpen, onClose }: Props) {
             />
           </div>
 
+          {/* Status */}
           <div>
-            <label className="text-lg font-semibold">Status*</label>
+            <label className="text-base font-semibold">Status*</label>
             <select
-              className="w-full border rounded px-3 py-1 mt-1"
+              className="w-full border border-gray-300 rounded-md px-4 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               name="status"
               value={formData.status}
               onChange={handleChange}
@@ -104,11 +102,12 @@ export default function ModalNovoCaso({ isOpen, onClose }: Props) {
             </select>
           </div>
 
+          {/* Data de abertura */}
           <div>
-            <label className="text-lg font-semibold">Data de abertura*</label>
+            <label className="text-base font-semibold">Data de Abertura*</label>
             <input
               type="date"
-              className="w-full border rounded px-3 py-1 mt-1"
+              className="w-full border border-gray-300 rounded-md px-4 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
               name="dataAbertura"
               value={formData.dataAbertura}
               onChange={handleChange}
@@ -116,11 +115,12 @@ export default function ModalNovoCaso({ isOpen, onClose }: Props) {
             />
           </div>
 
+          {/* Descrição */}
           <div>
-            <label className="text-lg font-semibold">Descrição*</label>
+            <label className="text-base font-semibold">Descrição*</label>
             <textarea
               placeholder="Escreva aqui"
-              className="w-full border h-52 rounded px-3 py-3 mt-1"
+              className="w-full border border-gray-300 rounded-md px-4 py-3 mt-1 h-40 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
               name="descricao"
               value={formData.descricao}
               onChange={handleChange}
@@ -128,17 +128,18 @@ export default function ModalNovoCaso({ isOpen, onClose }: Props) {
             />
           </div>
 
-          <div className="flex justify-between mt-4">
+          {/* Botões */}
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 mt-6">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-1 border rounded bg-gray-100 hover:bg-gray-200"
+              className="w-full md:w-auto px-6 py-2 border border-gray-300 rounded-md bg-gray-100 hover:bg-gray-200 transition"
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="px-4 py-1 bg-blue-900 text-white rounded hover:bg-blue-800"
+              className="w-full md:w-auto px-6 py-2 bg-blue-900 text-white rounded-md hover:bg-blue-800 transition"
             >
               {loading ? "Cadastrando..." : "Cadastrar"}
             </button>

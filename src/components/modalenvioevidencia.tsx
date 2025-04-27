@@ -85,14 +85,12 @@ export default function ModalEnvioEvidencia({
     if (formData.imageFile) {
       formDataToSend.append("file", formData.imageFile);
     }
-    console.log("teste de aparencia: ", [...formDataToSend]);
 
     try {
       await criarEvidencia(formDataToSend);
-      console.log("ENVIANDO:", formDataToSend);
       onClose();
     } catch (error) {
-      console.log("Erro ao criar caso", error);
+      console.log("Erro ao criar evidência", error);
     } finally {
       setLoading(false);
     }
@@ -127,11 +125,12 @@ export default function ModalEnvioEvidencia({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-[#F5F5F5] p-6 rounded-lg w-[640px]">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-[#F5F5F5] p-6 rounded-lg w-full max-w-[640px]">
         <h2 className="text-2xl font-bold mb-6">Envio de Evidência</h2>
 
-        <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Título */}
           <div className="flex flex-col">
             <label className="text-sm font-medium">
               Título<span className="text-red-500">*</span>
@@ -145,6 +144,7 @@ export default function ModalEnvioEvidencia({
             />
           </div>
 
+          {/* Data de Registro */}
           <div className="flex flex-col">
             <label className="text-sm font-medium">
               Data de Registro<span className="text-red-500">*</span>
@@ -160,6 +160,7 @@ export default function ModalEnvioEvidencia({
             />
           </div>
 
+          {/* Tipo */}
           <div className="flex flex-col">
             <label className="text-sm font-medium">
               Tipo<span className="text-red-500">*</span>
@@ -173,6 +174,7 @@ export default function ModalEnvioEvidencia({
             />
           </div>
 
+          {/* Local */}
           <div className="flex flex-col">
             <label className="text-sm font-medium">
               Local<span className="text-red-500">*</span>
@@ -186,7 +188,8 @@ export default function ModalEnvioEvidencia({
             />
           </div>
 
-          <div className="flex flex-col w-full">
+          {/* Descrição */}
+          <div className="flex flex-col md:col-span-2">
             <label className="text-sm font-medium">
               Descrição<span className="text-red-500">*</span>
             </label>
@@ -194,12 +197,13 @@ export default function ModalEnvioEvidencia({
               name="descricao"
               value={formData.descricao}
               onChange={handleChange}
-              className="p-2 border border-gray-300 rounded"
+              className="p-2 border border-gray-300 rounded resize-none"
               placeholder="Descreva o Caso"
             />
           </div>
 
-          <div className="col-span-2 flex flex-col">
+          {/* Upload */}
+          <div className="flex flex-col md:col-span-2">
             <label className="text-sm font-medium mb-1">
               Faça o upload de imagens ou exames:
             </label>
@@ -218,7 +222,8 @@ export default function ModalEnvioEvidencia({
             </label>
           </div>
 
-          <div className="col-span-2 flex flex-col">
+          {/* Caso Selecionado */}
+          <div className="flex flex-col md:col-span-2">
             <label className="text-sm font-medium">Caso Selecionado</label>
             <input
               type="text"
@@ -228,17 +233,18 @@ export default function ModalEnvioEvidencia({
             />
           </div>
 
-          <div className="col-span-2 flex justify-between mt-6">
+          {/* Botões */}
+          <div className="flex justify-between mt-6 md:col-span-2">
             <button
               onClick={handleClose}
               type="button"
               className="flex items-center gap-2 border border-gray-300 px-4 py-2 rounded text-gray-700 bg-white hover:bg-gray-100"
             >
-              <span>&larr;</span> Cancelar
+              &larr; Cancelar
             </button>
             <button
               type="submit"
-              className="px-4 py-1 bg-blue-900 text-white rounded hover:bg-blue-800"
+              className="px-6 py-2 bg-blue-900 text-white rounded hover:bg-blue-800"
             >
               {loading ? "Enviando..." : "Enviar"}
             </button>
