@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getUsers } from "@/service/user"; // Ajuste o caminho se necessário
+import { Eye, Pencil, CircleX } from "lucide-react"; // Importando os ícones corretos
 
 interface User {
   id: string;
@@ -31,20 +32,14 @@ export default function TableSection() {
   }, []);
 
   return (
-    <section>
-      {/* Tabela */}
-      <div className="overflow-auto rounded-lg border border-gray-300">
-        <table className="w-full text-sm">
+
+    <section className="w-full">
+      <div className="w-full overflow-x-auto rounded-lg border border-gray-300">
+        <table className="min-w-full text-sm">
           <thead>
-            <tr className="bg-[#B6C0C7] text-left">
-              {[
-                "ID do Funcionário",
-                "Nome",
-                "Cargo",
-                "E-mail",
-                "Ação",
-              ].map((col) => (
-                <th key={col} className="px-4 py-2 font-medium">
+            <tr className="bg-[#B6C0C7] text-left text-gray-800">
+              {["ID do Funcionário", "Nome", "Cargo", "E-mail", "Ação"].map((col) => (
+                <th key={col} className="px-2 sm:px-4 py-3 font-semibold whitespace-nowrap">
                   {col}
                 </th>
               ))}
@@ -54,13 +49,14 @@ export default function TableSection() {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={6} className="text-center py-6">
+                <td colSpan={5} className="px-4 py-6 text-center">
+
                   Carregando usuários...
                 </td>
               </tr>
             ) : users.length === 0 ? (
               <tr>
-                <td colSpan={6} className="text-center py-6">
+                <td colSpan={5} className="px-4 py-6 text-center">
                   Nenhum usuário encontrado.
                 </td>
               </tr>
@@ -70,14 +66,20 @@ export default function TableSection() {
                   key={user._id}
                   className={i % 2 === 0 ? "bg-[#E8EBED]" : "bg-[#B6C0C7]"}
                 >
-                  <td className="px-4 py-2">{user._id}</td>
-                  <td className="px-4 py-2">{user.name}</td>
-                  <td className="px-4 py-2">{user.role}</td>
-                  <td className="px-4 py-2">{user.email}</td>
-                  <td className="px-4 py-2 flex gap-1">
-                    <button className="cursor-pointer" title="Editar">✏️</button>
-                    <button className="cursor-pointer" title="Imprimir">🖨️</button>
-                    <button className="cursor-pointer" title="Excluir">🗑️</button>
+
+                  <td className="px-2 sm:px-4 py-3 whitespace-nowrap">{user._id}</td>
+                  <td className="px-2 sm:px-4 py-3 whitespace-nowrap">{user.name}</td>
+                  <td className="px-2 sm:px-4 py-3 whitespace-nowrap">{user.role}</td>
+                  <td className="px-2 sm:px-4 py-3 whitespace-nowrap">{user.email}</td>
+                  <td className="px-2 sm:px-4 py-3 whitespace-nowrap">
+                    <div className="flex items-center gap-3">
+                    <Eye
+                        onClick={() => {
+                        }}
+                        className="cursor-pointer text-blue-600 hover:scale-110 transition-transform"
+                      />
+                      <CircleX className="cursor-pointer text-red-500 hover:scale-110 transition-transform" />
+                    </div>
                   </td>
                 </tr>
               ))
