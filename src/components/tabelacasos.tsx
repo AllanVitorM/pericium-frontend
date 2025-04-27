@@ -20,7 +20,9 @@ export default function TableCases() {
   const [casos, setCasos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [casoSelecionado, setCasoSelecionado] = useState<any | null>(null);
-  const [evidenciaSelecionada, setEvidenciaSelecionada] = useState<any | null>(null);
+  const [evidenciaSelecionada, setEvidenciaSelecionada] = useState<any | null>(
+    null
+  );
 
   const abrirModal = (nome: string) => setModalAtual(nome);
   const fecharModal = () => setModalAtual(null);
@@ -29,7 +31,7 @@ export default function TableCases() {
     modalName: "envioEvidencia" | "caso" | "editarEvidencia" | "laudo",
     data?: any
   ) => {
-    if (modalName === "editarEvidencia" && data) {
+    if ((modalName === "editarEvidencia" || modalName === "laudo") && data) {
       setEvidenciaSelecionada(data);
     } else if (data) {
       setCasoSelecionado(data);
@@ -72,8 +74,18 @@ export default function TableCases() {
         <table className="min-w-full text-sm">
           <thead>
             <tr className="bg-[#B6C0C7] text-left">
-              {["ID do Caso", "Titulo", "Data", "Status", "Responsáveis", "Ações"].map((col) => (
-                <th key={col} className="px-4 py-3 font-semibold whitespace-nowrap">
+              {[
+                "ID do Caso",
+                "Titulo",
+                "Data",
+                "Status",
+                "Responsáveis",
+                "Ações",
+              ].map((col) => (
+                <th
+                  key={col}
+                  className="px-4 py-3 font-semibold whitespace-nowrap"
+                >
                   {col}
                 </th>
               ))}
@@ -96,13 +108,19 @@ export default function TableCases() {
               casos.map((caso, i) => (
                 <tr
                   key={caso._id || i}
-                  className={`${i % 2 === 0 ? "bg-[#E8EBED]" : "bg-[#B6C0C7]"} hover:bg-gray-200 transition-colors`}
+                  className={`${
+                    i % 2 === 0 ? "bg-[#E8EBED]" : "bg-[#B6C0C7]"
+                  } hover:bg-gray-200 transition-colors`}
                 >
                   <td className="px-4 py-2 whitespace-nowrap">{caso._id}</td>
                   <td className="px-4 py-2 whitespace-nowrap">{caso.titulo}</td>
-                  <td className="px-4 py-2 whitespace-nowrap">{new Date(caso.dataAbertura).toLocaleDateString()}</td>
+                  <td className="px-4 py-2 whitespace-nowrap">
+                    {new Date(caso.dataAbertura).toLocaleDateString()}
+                  </td>
                   <td className="px-4 py-2 whitespace-nowrap">{caso.status}</td>
-                  <td className="px-4 py-2 whitespace-nowrap">{caso.userId?.name || "-"}</td>
+                  <td className="px-4 py-2 whitespace-nowrap">
+                    {caso.userId?.name || "-"}
+                  </td>
                   <td className="px-4 py-2">
                     <div className="flex items-center gap-3">
                       <Eye
@@ -139,11 +157,17 @@ export default function TableCases() {
         <ModalEditarEvidencia
           isOpen
           onClose={fecharModal}
-          onNext={() => abrirModal("laudo")}
+          onNext={() => handleNext("laudo", evidenciaSelecionada)}
           evidencia={evidenciaSelecionada}
         />
       )}
-      <ModalLaudo isOpen={modalAtual === "laudo"} onClose={fecharModal} />
+      {evidenciaSelecionada && (
+        <ModalLaudo
+          isOpen={modalAtual === "laudo"}
+          evidenciaId={evidenciaSelecionada._id}
+          onClose={fecharModal}
+        />
+      )}
     </>
   );
 }

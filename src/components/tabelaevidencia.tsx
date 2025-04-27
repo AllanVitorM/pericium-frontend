@@ -1,8 +1,8 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from "react"
-import { getEvidenciaByCaseId, deleteEvidencia } from "@/service/evidencia"
-import { Eye, CircleX } from "lucide-react";
+import { useEffect, useState } from "react";
+import { getEvidenciaByCaseId, deleteEvidencia } from "@/service/evidencia";
+import { Eye, CircleX, FileText } from "lucide-react";
 
 interface Evidencia {
   _id: string;
@@ -22,6 +22,9 @@ interface Props {
 export default function TabelaEvidencia({ caseId, onNext }: Props) {
   const [evidencias, setEvidencias] = useState<Evidencia[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedEvidenciaId, setSelectedEvidenciaId] = useState<string | null>(
+    null
+  );
 
   useEffect(() => {
     if (!caseId) return;
@@ -58,9 +61,15 @@ export default function TabelaEvidencia({ caseId, onNext }: Props) {
       <table className="min-w-full text-sm">
         <thead>
           <tr className="bg-[#B6C0C7] text-gray-800">
-            <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">Título</th>
-            <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">Data</th>
-            <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">Ações</th>
+            <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">
+              Título
+            </th>
+            <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">
+              Data
+            </th>
+            <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">
+              Ações
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -80,17 +89,27 @@ export default function TabelaEvidencia({ caseId, onNext }: Props) {
             evidencias.map((evidencia, i) => (
               <tr
                 key={evidencia._id}
-                className={`${i % 2 === 0 ? "bg-[#E8EBED]" : "bg-[#B6C0C7]"} hover:bg-gray-200 transition-colors`}
+                className={`${
+                  i % 2 === 0 ? "bg-[#E8EBED]" : "bg-[#B6C0C7]"
+                } hover:bg-gray-200 transition-colors`}
               >
-                <td className="px-4 py-3 whitespace-nowrap">{evidencia.title}</td>
+                <td className="px-4 py-3 whitespace-nowrap">
+                  {evidencia.title}
+                </td>
                 <td className="px-4 py-3 whitespace-nowrap">
                   {new Date(evidencia.dateRegister).toLocaleDateString()}
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-4">
                     <Eye
-                      onClick={() => onNext('editarEvidencia', evidencia)}
+                      onClick={() => onNext("editarEvidencia", evidencia)}
                       className="cursor-pointer text-blue-600 hover:scale-110 transition-transform"
+                    />
+                    <FileText
+                      onClick={() => {
+                        setSelectedEvidenciaId(evidencia._id);
+                        onNext("laudo", evidencia);
+                      }}
                     />
                     <CircleX
                       onClick={() => handleDelete(evidencia._id)}
@@ -104,5 +123,5 @@ export default function TabelaEvidencia({ caseId, onNext }: Props) {
         </tbody>
       </table>
     </div>
-  )
+  );
 }
