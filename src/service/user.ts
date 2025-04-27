@@ -11,3 +11,4 @@ interface CreateUserDTO {
     const response = await api.post("/users/createuser", dados)
     return response.data
   }
+ 

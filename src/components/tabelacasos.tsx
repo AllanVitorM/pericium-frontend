@@ -4,7 +4,7 @@ import ModalEditarEvidencia from "@/components/modaleditarevidencia";
 import ModalLaudo from "@/components/modallaudo";
 import { useState, useEffect } from "react";
 import { getCaso } from "@/service/casos";
-import { Eye, View } from "lucide-react";
+import { Eye } from "lucide-react";
 
 import { CircleX } from "lucide-react";
 
@@ -22,9 +22,6 @@ export default function TableCases() {
   const [casos, setCasos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [casoSelecionado, setCasoSelecionado] = useState<any | null>(null);
-  const [modalAberto, setModalAberto] = useState<
-    "caso" | "envioEvidencia" | null
-  >(null);
   const [evidenciaSelecionada, setEvidenciaSelecionada] = useState(null);
 
   const abrirModal = (nome: string) => setModalAtual(nome);
@@ -34,7 +31,7 @@ export default function TableCases() {
     modalName: "envioEvidencia" | "caso" | "editarEvidencia" | "laudo",
     data?: any
   ) => {
-    if (modalName === "editarEvidencia" && data) {
+    if ((modalName === "editarEvidencia" || modalName === "laudo") && data) {
       setEvidenciaSelecionada(data);
     } else if (data) {
       setCasoSelecionado(data);
@@ -43,14 +40,11 @@ export default function TableCases() {
   };
 
 
-  const abrirEditarEvidencia = (casos: string) => {
-    setModalAtual("editarEvidencia");
-  };
-
   useEffect(() => {
     const carregarCasos = async () => {
       try {
         const token = localStorage.getItem("token");
+        
         const usuario = token ? parseJwt(token) : null;
 
         const todoscasos = await getCaso();
@@ -131,7 +125,10 @@ export default function TableCases() {
                       }}
                       className="cursor-pointer"
                     />
+
+
                     <CircleX />
+
                   </div>
                 </td>
               </tr>
@@ -161,7 +158,7 @@ export default function TableCases() {
           evidencia={evidenciaSelecionada}
         />
       )}
-      <ModalLaudo isOpen={modalAtual === "laudo"} onClose={fecharModal} />
+      <ModalLaudo isOpen={modalAtual === "laudo"} evidenciaId={evidenciaSelecionada?._id} onClose={fecharModal} />
     </>
   );
 }

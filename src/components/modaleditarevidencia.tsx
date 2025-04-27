@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { FileText, Upload } from "lucide-react";
-import { title } from "process";
+import { Upload, PenTool } from "lucide-react";
+import { assinarLaudo, buscarLaudo } from "@/service/laudo";
+
+
+function parseJwt(token: string): any {
+  try {
+    return JSON.parse(atob(token.split(".")[1]));
+  } catch (e) {
+    console.error("Erro ao decodificar token jwt", e);
+    return null;
+  }
+}
 
 interface Evidencia {
   _id: string;
@@ -35,11 +45,76 @@ export default function ModalEditarEvidencia({
     descricao: "",
   });
 
+  const [laudoId, setLaudoId] = useState<string | null>(null);
+  const [assinado, setAssinado] = useState(false);
+  const [sucessoAssinatura, setSucessoAssinatura] = useState(false);
+
   useEffect(() => {
     if (evidencia) {
       setFormData(evidencia);
+
+      async function fetchLaudo() {
+        try {
+          console.log("Buscando laudo para evidencia ID:", evidencia!._id); 
+          const laudo = await buscarLaudo(evidencia!._id);
+          console.log("Laudo encontrado:", laudo);
+          if (laudo.length > 0 ) {
+            setLaudoId(laudo[0]?._id);
+          } else {
+            console.log("Nenhum laudo encontrado para esta evidência.")
+          }
+          
+        } catch (error) {
+          console.error("Erro ao buscar laudo!", error);
+        }
+      }
+      fetchLaudo();
     }
   }, [evidencia]);
+
+  const handleAssinatura = async () => {
+    if (!laudoId) {
+      console.log("Nenhum laudoId disponível para assinatura.");
+      alert("Laudo não encontrado.");
+      return;
+    }
+
+    const token = localStorage.getItem('token');
+    let peritoId: string | null = null
+
+    if (token) {
+      const decoded = parseJwt(token);
+      peritoId = decoded?.sub;
+
+      if (!peritoId) {
+        console.log("Nenhum perito ou admin encontrado");
+        alert("Usuário não autenticado");
+        return;
+      }
+    } else {
+      console.log("Token não encontrado");
+      alert("Usuário não autenticado");
+      return;
+    }
+
+    try {
+      console.log("Tentando assinar o laudo:", laudoId, "com peritoId:", peritoId);
+      setAssinado(true);
+
+      const response = await assinarLaudo(laudoId, peritoId);
+      if (response.status === 200) {
+        setSucessoAssinatura(true);
+        alert("Laudo assinado com sucesso.");
+      } else {
+        alert("Erro ao assinar o laudo.");
+      }
+    } catch (error) {
+      console.error("Erro ao assinar o laudo", error);
+      alert("Erro ao assinar o laudo amigão!");
+    } finally {
+      setAssinado(false);
+    }
+  };
 
   if (!isOpen || !evidencia) return null;
 
@@ -49,9 +124,19 @@ export default function ModalEditarEvidencia({
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold">Editar Evidência</h2>
-          <button className="flex items-center gap-2 bg-[#002D62] text-white text-sm px-4 py-2 rounded">
-            <FileText size={16} />
-            Laudo
+          <button
+            onClick={handleAssinatura}
+            disabled={assinado || sucessoAssinatura}
+            className={`flex items-center gap-2 ${
+              sucessoAssinatura ? "bg-green-600" : "bg-[#002D62]"
+            } text-white text-sm px-4 py-2 rounded hover:bg-[#001f47]`}
+          >
+            <PenTool size={16} />
+            {assinado
+              ? "Assinando..."
+              : sucessoAssinatura
+              ? "Assinado"
+              : "Assinar Laudo"}
           </button>
         </div>
 
@@ -81,7 +166,10 @@ export default function ModalEditarEvidencia({
               className="p-2 border border-gray-300 rounded"
               placeholder="Placeholder"
               onChange={(e) =>
-                setFormData((prev) => ({ ...prev, dateRegister: e.target.value }))
+                setFormData((prev) => ({
+                  ...prev,
+                  dateRegister: e.target.value,
+                }))
               }
             />
           </div>
