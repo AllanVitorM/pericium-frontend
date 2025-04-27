@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { FileText, Upload } from "lucide-react";
-import { updateEvidencia, deleteEvidencia } from "@/service/evidencia";
+import { PenTool, Upload } from "lucide-react";
+import { updateEvidencia } from "@/service/evidencia";
+import { buscarLaudo, assinarLaudo } from "@/service/laudo";
+
+
+function parseJwt(token: string): any {
+  try {
+    return JSON.parse(atob(token.split(".")[1]));
+  } catch (e) {
+    console.error("Erro ao decodificar token jwt", e);
+    return null;
+  }
+}
 
 interface Evidencia {
   _id: string;
@@ -22,7 +33,6 @@ interface ModalEditarEvidenciaProps {
 export default function ModalEditarEvidencia({
   isOpen,
   onClose,
-  onNext,
   evidencia,
 }: ModalEditarEvidenciaProps) {
   const [formData, setFormData] = useState<Evidencia>({
@@ -35,13 +45,9 @@ export default function ModalEditarEvidencia({
     descricao: "",
   });
 
-  useEffect(() => {
-    if (evidencia) {
-      setFormData(evidencia);
-    }
-  }, [evidencia]);
-
-  if (!isOpen || !evidencia) return null;
+  const [laudoId, setLaudoId] = useState<string | null>(null);
+  const [assinado, setAssinado] = useState(false);
+  const [sucessoAssinatura, setSucessoAssinatura] = useState(false);
 
   const handleUpdate = async () => {
     try {
@@ -54,15 +60,94 @@ export default function ModalEditarEvidencia({
     }
   };
 
+  useEffect(() => {
+    if (evidencia) {
+      setFormData(evidencia);
+
+      async function fetchLaudo() {
+        try {
+          console.log("Buscando laudo para evidencia ID:", evidencia!._id); 
+          const laudo = await buscarLaudo(evidencia!._id);
+          console.log("Laudo encontrado:", laudo);
+          if (laudo.length > 0 ) {
+            setLaudoId(laudo[0]?._id);
+          } else {
+            console.log("Nenhum laudo encontrado para esta evidência.")
+          }
+          
+        } catch (error) {
+          console.error("Erro ao buscar laudo!", error);
+        }
+      }
+      fetchLaudo();
+    }
+  }, [evidencia]);
+
+  const handleAssinatura = async () => {
+    if (!laudoId) {
+      console.log("Nenhum laudoId disponível para assinatura.");
+      alert("Laudo não encontrado.");
+      return;
+    }
+
+    const token = localStorage.getItem('token');
+    let peritoId: string | null = null
+
+    if (token) {
+      const decoded = parseJwt(token);
+      peritoId = decoded?.sub;
+
+      if (!peritoId) {
+        console.log("Nenhum perito ou admin encontrado");
+        alert("Usuário não autenticado");
+        return;
+      }
+    } else {
+      console.log("Token não encontrado");
+      alert("Usuário não autenticado");
+      return;
+    }
+
+    try {
+      console.log("Tentando assinar o laudo:", laudoId, "com peritoId:", peritoId);
+      setAssinado(true);
+
+      const response = await assinarLaudo(laudoId, peritoId);
+      if (response.status === 200) {
+        setSucessoAssinatura(true);
+        alert("Laudo assinado com sucesso.");
+      } else {
+        alert("Erro ao assinar o laudo.");
+      }
+    } catch (error) {
+      console.error("Erro ao assinar o laudo", error);
+      alert("Erro ao assinar o laudo amigão!");
+    } finally {
+      setAssinado(false);
+    }
+  };
+
+  if (!isOpen || !evidencia) return null;
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-[#F5F5F5] p-6 rounded-lg w-full max-w-2xl relative overflow-y-auto max-h-[90vh]">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
           <h2 className="text-2xl font-bold">Editar Evidência</h2>
-          <button className="flex items-center gap-2 bg-[#002D62] text-white text-sm px-4 py-2 rounded hover:bg-[#001f47]">
-            <FileText size={16} />
-            Laudo
+          <button
+            onClick={handleAssinatura}
+            disabled={assinado || sucessoAssinatura}
+            className={`flex items-center gap-2 ${
+              sucessoAssinatura ? "bg-green-600" : "bg-[#002D62]"
+            } text-white text-sm px-4 py-2 rounded hover:bg-[#001f47]`}
+          >
+            <PenTool size={16} />
+            {assinado
+              ? "Assinando..."
+              : sucessoAssinatura
+              ? "Assinado"
+              : "Assinar Laudo"}
           </button>
         </div>
 
