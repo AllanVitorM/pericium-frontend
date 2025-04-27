@@ -1,4 +1,9 @@
-"use client";
+'use client'
+
+import { useEffect, useState } from "react"
+import { getEvidenciaByCaseId } from "@/service/evidencia"
+import { Eye, Pencil, CircleX } from "lucide-react";
+import { deleteEvidencia } from "@/service/evidencia";
 
 import { useEffect, useState } from "react";
 import { getEvidenciaByCaseId } from "@/service/evidencia";
@@ -6,9 +11,13 @@ import { Eye, FileText, CircleX } from "lucide-react";
 import ModalLaudo from "./modallaudo";
 
 interface Evidencia {
-  _id: string;
-  title: string;
-  dateRegister: string;
+    _id: string;
+    title: string;
+    dateRegister: string;
+    local?: string;
+    tipo?: string;
+    peritoResponsavel?: string;
+    descricao?: string;
 }
 
 interface Props {
@@ -17,6 +26,7 @@ interface Props {
 }
 
 export default function TabelaEvidencia({ caseId, onNext }: Props) {
+
   const [evidencias, setEvidencias] = useState<Evidencia[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedEvidenciaId, setSelectedEvidenciaId] = useState<string | null>(
@@ -25,6 +35,7 @@ export default function TabelaEvidencia({ caseId, onNext }: Props) {
 
   useEffect(() => {
     if (!caseId) return;
+
 
     const fetchEvidencias = async () => {
       try {
@@ -35,10 +46,22 @@ export default function TabelaEvidencia({ caseId, onNext }: Props) {
       } finally {
         setLoading(false);
       }
+    const handleDelete = async (id: string) => {
+        if (confirm("Tem certeza que deseja deletar esta evidência?")) {
+            try {
+                await deleteEvidencia(id);
+                alert("Evidência deletada com sucesso!");
+                // Aqui você pode atualizar a lista para remover a evidência da tela
+            } catch (error) {
+                console.error("Erro ao deletar evidência:", error);
+                alert("Erro ao deletar evidência.");
+            }
+        }
     };
 
     fetchEvidencias();
   }, [caseId]);
+
 
   return (
     <div className="overflow-hidden rounded border border-gray-300">
@@ -82,7 +105,10 @@ export default function TabelaEvidencia({ caseId, onNext }: Props) {
                       onNext("laudo", evidencias);
                     }}
                   />
-                  <CircleX className="text-red-500 hover:text-red-800" />
+                  <CircleX
+                    className="text-red-500 hover:text-red-800 cursor-pointer"
+                    onClick={() => handleDelete(evidencias._id)}
+                     />
                 </td>
               </tr>
             ))

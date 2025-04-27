@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
+
 import { Upload, PenTool } from "lucide-react";
-import { assinarLaudo, buscarLaudo } from "@/service/laudo";
+import { assinarLaudo, buscarLaudo, updateEvidencia, deleteEvidencia } from "@/service/laudo";
 
 
 function parseJwt(token: string): any {
@@ -117,6 +118,30 @@ export default function ModalEditarEvidencia({
   };
 
   if (!isOpen || !evidencia) return null;
+  const handleUpdate = async () => {
+    try {
+      await updateEvidencia(formData._id, formData);
+      alert("Evidência atualizada com sucesso!");
+      onClose();
+    } catch (error: any) {
+      console.error("Erro ao atualizar a evidência:", error.response?.data || error.message || error);
+      alert("Erro ao atualizar evidência: " + (error.response?.data?.message || error.message));
+    }
+  };
+  
+
+  const handleDelete = async (id: string) => {
+    if (confirm("Tem certeza que deseja deletar esta evidência?")) {
+      try {
+        await deleteEvidencia(id);
+        alert("Evidência deletada com sucesso!");
+        // Aqui você pode atualizar a lista para remover a evidência da tela
+      } catch (error) {
+        console.error("Erro ao deletar evidência:", error);
+        alert("Erro ao deletar evidência.");
+      }
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">
@@ -252,11 +277,13 @@ export default function ModalEditarEvidencia({
             &larr; Cancelar
           </button>
           <button
-            onClick={onNext}
+            onClick={handleUpdate}
             className="flex items-center gap-2 bg-[#002D62] text-white px-6 py-2 rounded hover:bg-[#001f47]"
           >
             Enviar &rarr;
           </button>
+
+
         </div>
       </div>
     </div>
