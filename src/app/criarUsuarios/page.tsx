@@ -17,7 +17,7 @@ export default function FuncionariosPage() {
     <ProtectedRoute allowedRoles={["ADMIN"]}>
       <div className="flex h-screen">
         <div className="lg:w-64">
-                    <Sidebar />
+            <Sidebar />
         </div>
         <main className="flex-1 bg-white p-6 overflow-y-auto">
           <AdminHeader />

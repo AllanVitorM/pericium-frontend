@@ -70,7 +70,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       localStorage.setItem("user", JSON.stringify(response.data));
 
       setUser(response.data);
-      router.push("/casos");
+      router.push("/home");
     } catch (err) {
       throw err;
     }

@@ -31,8 +31,6 @@ export default function PerfilPage() {
 
       {/* Main Content */}
       <main className="flex-1 bg-white p-4 sm:p-6">
-        {/* Header */}
-        <AdminHeader id={form.id} nome={form.nome} cargo={form.cargo} />
 
         {/* Formulário */}
         <div className="w-full max-w-md mx-auto mt-6 bg-[#B6C0C7] rounded-md p-5 shadow-md text-sm">
