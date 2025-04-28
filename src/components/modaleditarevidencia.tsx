@@ -63,22 +63,28 @@ export default function ModalEditarEvidencia({
   useEffect(() => {
     if (evidencia) {
       setFormData(evidencia);
-
+  
       async function fetchLaudo() {
         try {
-          console.log("Buscando laudo para evidencia ID:", evidencia!._id); 
-          const laudo = await buscarLaudo(evidencia!._id);
-          console.log("Laudo encontrado:", laudo);
-          if (laudo.length > 0 ) {
-            setLaudoId(laudo[0]?._id);
+          const laudo = await buscarLaudo(evidencia._id);
+          if (laudo.length > 0) {
+            const primeiroLaudo = laudo[0];
+            setLaudoId(primeiroLaudo._id);
+  
+            // Verifica se já está assinado
+            if (primeiroLaudo.assinado === true) {
+              setSucessoAssinatura(true);
+            } else {
+              setSucessoAssinatura(false);
+            }
           } else {
-            console.log("Nenhum laudo encontrado para esta evidência.")
+            console.log("Nenhum laudo encontrado para esta evidência.");
           }
-          
         } catch (error) {
           console.error("Erro ao buscar laudo!", error);
         }
       }
+  
       fetchLaudo();
     }
   }, [evidencia]);

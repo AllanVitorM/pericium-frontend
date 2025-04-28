@@ -45,7 +45,7 @@ export default function Sidebar() {
       `}>
 
         
-        <Image src={logoAzul} alt="logo" className="mb-8 w-32 h-32 object-contain mx-auto" />
+       <a href="/home"> <Image src={logoAzul} alt="logo" className="mb-8 w-44 h-44 object-contain mx-auto" /> </a> 
         
         <nav className="flex flex-col gap-4 w-full px-6">
           {pages.map((item) => (
