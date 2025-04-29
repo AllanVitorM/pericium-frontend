@@ -7,7 +7,7 @@ import { ButtonLogin } from "./button";
 export default function LoginForm() {
   const [cpf, setCpf] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [, setError] = useState("");
   const { login } = useAuth();
 
   const handlesubmit = async (e: React.FormEvent) => {
@@ -19,7 +19,7 @@ export default function LoginForm() {
       console.log("✅ Login com sucesso");
     } catch (error) {
       console.error("❌ Erro no login:", error);
-      setError(error?.message || "Erro ao fazer login");
+      setError((error as Error)?.message || "Erro ao fazer login");
     }
   };
 
