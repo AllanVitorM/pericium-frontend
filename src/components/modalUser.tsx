@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { criarUsuario } from "@/service/user";
+import { AxiosError } from "axios";
 
 interface modalNovoUsuarioProps {
   isOpen: boolean;
@@ -40,8 +41,9 @@ export default function ModalUser({ isOpen, onClose }: modalNovoUsuarioProps) {
     try {
       const response = await criarUsuario(formData);
       setTemporaryPassword(response.temporaryPassword);
-    } catch (err) {
-      setError(err.response?.data?.message || "Erro ao criar usuário");
+    } catch (err: unknown) {
+      const error = err as AxiosError<{ message: string }>;
+      setError(error.response?.data?.message || "Erro ao criar usuário");
     } finally {
       setLoading(false);
     }
@@ -73,7 +75,9 @@ export default function ModalUser({ isOpen, onClose }: modalNovoUsuarioProps) {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-[#F5F5F4] p-6 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-xl font-bold mb-4 text-center">Criar Novo Usuário</h2>
+        <h2 className="text-xl font-bold mb-4 text-center">
+          Criar Novo Usuário
+        </h2>
 
         <form onSubmit={handleSubmit}>
           <label htmlFor="name" className="font-bold text-base block mb-2">
