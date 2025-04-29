@@ -2,10 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Sidebar from "@/components/sidebar";
-import { getProfile, updatePassword } from "@/service/user";
-import ModalSenha from "@/components/modalsenha";
-
-export default function PerfilPage() {
+<<<<<<< HEAD
+=
   const [form, setForm] = useState({
     nome: "",
     cargo: "",

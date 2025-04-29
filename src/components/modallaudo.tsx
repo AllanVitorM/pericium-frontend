@@ -1,13 +1,18 @@
 import React, { useState } from "react";
 import { criarLaudo } from "@/service/laudo";
+import { User } from "lucide-react";
 
 interface ModalLaudoProps {
   isOpen: boolean;
-  onClose: () => void; 
+  onClose: () => void;
   evidenciaId: string;
 }
 
-export function parseJwt(token: string): any {
+type User = {
+  sub: string;
+};
+
+export function parseJwt(token: string): User | null {
   try {
     return JSON.parse(atob(token.split(".")[1]));
   } catch (e) {
@@ -16,12 +21,15 @@ export function parseJwt(token: string): any {
   }
 }
 
-export default function ModalLaudo({ isOpen, onClose, evidenciaId}: ModalLaudoProps) {
+export default function ModalLaudo({
+  isOpen,
+  onClose,
+  evidenciaId,
+}: ModalLaudoProps) {
   const [title, setTitle] = useState("");
-  const [descricao, setDescricao] = useState("")
+  const [descricao, setDescricao] = useState("");
 
   const handleCreateLaudo = async () => {
-    
     if (!title || !descricao) {
       alert("PREENCHA TODOS OS CAMPOS!");
       return;
@@ -32,32 +40,33 @@ export default function ModalLaudo({ isOpen, onClose, evidenciaId}: ModalLaudoPr
       evidenciaId,
     });
     const token = localStorage.getItem("token");
-    const usuario = token ? parseJwt(token) : null;
+    const usuario = token ? (parseJwt(token) as User) : null;
 
     if (!usuario) {
       alert("Usuário não autenticado!");
       return;
     }
-  
+
     try {
       await criarLaudo({
         title,
         descricao,
         evidenciaId: evidenciaId,
-        userId: usuario.sub
+        userId: usuario.sub,
       });
       alert("Laudo gerado com sucesso!");
       onClose();
-    } catch (error: any) {
-      console.error("Erro ao criar laudo", error);
-      if (error.response) {
-        console.error("Resposta do servidor:", error.response.data);
-        alert("Erro do servidor: " + JSON.stringify(error.response.data));
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: unknown } };
+      console.error("Erro ao criar laudo", err);
+      if (err.response) {
+        console.error("Resposta do servidor:", err.response.data);
+        alert("Erro do servidor: " + JSON.stringify(err.response.data));
       } else {
         alert("Erro desconhecido");
       }
     }
-  }
+  }; // <-- Fe
   if (!isOpen) return null;
 
   return (

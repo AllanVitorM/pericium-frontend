@@ -4,12 +4,16 @@ import { getIdCaso, updateCaso, deleteCaso } from "@/service/casos";
 import { FileText } from "lucide-react";
 import TabelaEvidencia from "./tabelaevidencia";
 
+
+type ModalName = "envioEvidencia" | "caso" | "editarEvidencia" | "laudo";
 interface ModalCasoProps {
   isOpen: boolean;
   onClose: () => void;
-  onNext: (modalName: string, data?: any) => void;
+  onNext: (modalName: ModalName, data?: unknown) => void;
   casoId: string;
 }
+
+
 
 export default function ModalCaso({
   isOpen,
@@ -21,7 +25,7 @@ export default function ModalCaso({
     titulo: "",
     descricao: "",
   });
-  const [error, setError] = useState("");
+  const [, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleClose = () => {
@@ -55,8 +59,9 @@ export default function ModalCaso({
       await updateCaso(casoId, casoData);
       alert("Caso atualizado com sucesso!");
       handleClose();
-    } catch (error: any) {
-      alert(error.response?.data?.message || "Erro ao atualizar o caso");
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      alert(err.response?.data?.message || "Erro ao atualizar o caso");
     } finally {
       setIsLoading(false);
     }
@@ -71,8 +76,9 @@ export default function ModalCaso({
       await deleteCaso(casoId);
       alert("Caso deletado com sucesso!");
       handleClose();
-    } catch (error: any) {
-      alert(error.response?.data?.message || "Erro ao deletar o caso");
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      alert(err.response?.data?.message || "Erro ao deletar o caso");
     } finally {
       setIsLoading(false);
     }

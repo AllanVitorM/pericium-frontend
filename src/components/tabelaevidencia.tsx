@@ -27,7 +27,7 @@ interface Props {
 export default function TabelaEvidencia({ caseId, onNext }: Props) {
   const [evidencias, setEvidencias] = useState<Evidencia[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedEvidenciaId, setSelectedEvidenciaId] = useState<string | null>(
+  const [, setSelectedEvidenciaId] = useState<string | null>(
     null
   );
 

@@ -7,7 +7,12 @@ interface modalRelatorioProps {
   caseId: string;
 }
 
-export function parseJwt(token: string): any {
+type User = {
+  sub: string;
+}
+
+export function parseJwt(token: string): User | null {
+
   try {
     return JSON.parse(atob(token.split(".")[1]));
   } catch (e) {
@@ -49,11 +54,14 @@ export default function ModalRelatorio({ isOpen, onClose, caseId}: modalRelatori
       });
       alert("Relatório gerado com sucesso!");
       onClose();
-    } catch (error: any) {
-      console.error("Erro ao criar laudo", error);
-      if (error.response) {
-        console.error("Resposta do servidor:", error.response.data);
-        alert("Erro do servidor: " + JSON.stringify(error.response.data));
+
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: unknown } };
+      console.error("Erro ao criar relatorio", err);
+      if (err.response) {
+        console.error("Resposta do servidor:", err.response.data);
+        alert("Erro do servidor: " + JSON.stringify(err.response.data));
+
       } else {
         alert("Erro desconhecido");
       }

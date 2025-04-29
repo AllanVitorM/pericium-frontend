@@ -30,7 +30,7 @@ export default function ModalEnvioEvidencia({
   });
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [, setError] = useState("");
 
   const handleChange = (
     e: React.ChangeEvent<
