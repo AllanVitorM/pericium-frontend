@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getUsers } from "@/service/user"; // Ajuste o caminho se necessário
-import { Eye, Pencil, CircleX } from "lucide-react"; // Importando os ícones corretos
+import { Eye, CircleX } from "lucide-react"; // Importando os ícones corretos
 
 interface User {
   id: string;

@@ -30,24 +30,21 @@ export default function TabelaEvidencia({ caseId, onNext }: Props) {
   const [selectedEvidenciaId, setSelectedEvidenciaId] = useState<string | null>(
     null
   );
-
+  const fetchEvidencias = async () => {
+    try {
+      const data = await getEvidenciaByCaseId(caseId);
+      setEvidencias(data);
+    } catch (error) {
+      console.error("Erro na busca de evidências.", error);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    if (!caseId) return;
-
-    const fetchEvidencias = async () => {
-      try {
-        const data = await getEvidenciaByCaseId(caseId);
-        setEvidencias(data);
-      } catch (error) {
-        console.error("Erro na busca de evidências.", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
+    if (!caseId)  {
     fetchEvidencias();
+    }
   }, [caseId]);
-
 
   const visualizarPdf = async (laudoId: string) => {
     try {
@@ -58,7 +55,6 @@ export default function TabelaEvidencia({ caseId, onNext }: Props) {
       console.error("Erro ao visualizar PDF: ", error);
     }
   };
-
 
   const handleDelete = async (id: string) => {
     if (confirm("Tem certeza que deseja deletar esta evidência?")) {
@@ -87,9 +83,7 @@ export default function TabelaEvidencia({ caseId, onNext }: Props) {
             <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">
               Ações Evidências
             </th>
-            <th>
-              Ações Laudos
-            </th>
+            <th>Ações Laudos</th>
           </tr>
         </thead>
         <tbody>
@@ -132,16 +126,16 @@ export default function TabelaEvidencia({ caseId, onNext }: Props) {
                   </div>
                 </td>
                 <td>
-                <div className="flex items-center gap-4 ml-10">
+                  <div className="flex items-center gap-4 ml-10">
                     <FileText
                       onClick={() => {
                         setSelectedEvidenciaId(evidencia._id);
                         onNext("laudo", evidencia);
                       }}
                     />
-                    <Search 
-                    onClick={() => visualizarPdf(evidencia._id)}
-                    className="cursor-pointer text-green-600 hover:scale-110 transition-transform"
+                    <Search
+                      onClick={() => visualizarPdf(evidencia._id)}
+                      className="cursor-pointer text-green-600 hover:scale-110 transition-transform"
                     />
                     <Trash2
                       onClick={() => handleDelete(evidencia._id)}

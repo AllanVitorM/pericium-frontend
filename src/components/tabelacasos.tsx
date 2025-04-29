@@ -44,33 +44,32 @@ export default function TableCases() {
     }
     setModalAtual(modalName);
   };
+  const carregarCasos = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const usuario = token ? parseJwt(token) : null;
 
-  useEffect(() => {
-    const carregarCasos = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const usuario = token ? parseJwt(token) : null;
-
-        const todoscasos = await getCaso();
-        if (!usuario) {
-          setCasos([]);
-          return;
-        }
-
-        const casosFiltrados =
-          usuario.role === "ADMIN"
-            ? todoscasos
-            : todoscasos.filter(
-                (caso: any) => caso.userId?._id === usuario.sub
-              );
-
-        setCasos(casosFiltrados);
-      } catch (error) {
-        console.error("Caso não encontrado.", error);
-      } finally {
-        setLoading(false);
+      const todoscasos = await getCaso();
+      if (!usuario) {
+        setCasos([]);
+        return;
       }
-    };
+
+      const casosFiltrados =
+        usuario.role === "ADMIN"
+          ? todoscasos
+          : todoscasos.filter(
+              (caso: any) => caso.userId?._id === usuario.sub
+            );
+
+      setCasos(casosFiltrados);
+    } catch (error) {
+      console.error("Caso não encontrado.", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
     carregarCasos();
   }, []);
 
@@ -165,21 +164,30 @@ export default function TableCases() {
 
       <ModalCaso
         isOpen={modalAtual === "caso"}
-        onClose={fecharModal}
+        onClose={() => {
+          fecharModal();
+          carregarCasos();
+        }}
         onNext={handleNext}
         casoId={casoSelecionado?._id}
       />
       {modalAtual === "envioEvidencia" && casoSelecionado && (
         <ModalEnvioEvidencia
           isOpen={modalAtual === "envioEvidencia"}
-          onClose={fecharModal}
+          onClose={() => {
+            fecharModal();
+            fetchEvidencias();
+          }}
           casoSelecionado={casoSelecionado}
         />
       )}
       {modalAtual === "editarEvidencia" && evidenciaSelecionada && (
         <ModalEditarEvidencia
           isOpen
-          onClose={fecharModal}
+          onClose={() => {
+            fecharModal();
+            fetchEvidencias();
+          }}
           onNext={() => handleNext("laudo", evidenciaSelecionada)}
           evidencia={evidenciaSelecionada}
         />
