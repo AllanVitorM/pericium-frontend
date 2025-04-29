@@ -8,6 +8,12 @@
     "start": "next start",
     "lint": "next lint"
   },
+  "eslintConfig": {
+    "extends": "next/core-web-vitals"
+  },
+  "typescript": {
+    "ignoreBuildErrors": true
+  },
   "dependencies": {
     "axios": "^1.8.4",
     "lucide-react": "^0.487.0",

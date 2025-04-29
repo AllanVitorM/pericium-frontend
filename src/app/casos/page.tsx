@@ -9,7 +9,7 @@ import TableCases from "@/components/tabelacasos";
 
 export default function CasosPage() {
   const [modalAtual, setModalAtual] = useState<string | null>(null);
-
+  const [ reloadKey, setReloadKey ] = useState(0);
   const abrirModal = (nome: string) => setModalAtual(nome);
   const fecharModal = () => setModalAtual(null);
 
@@ -27,12 +27,15 @@ export default function CasosPage() {
           <ButtonandSearch text="Novo caso" onClick={() => abrirModal("novoCaso")} type="button"/>
             
           <div className="overflow-auto rounded-lg border border-gray-300">
-            <TableCases />
+            <TableCases reloadKey={reloadKey} />
           </div>
 
           <ModalNovoCaso
             isOpen={modalAtual === "novoCaso"}
-            onClose={fecharModal}
+            onClose={() => {
+              fecharModal();
+              setReloadKey(prev => prev + 1);
+            }}
           />
         </main>
       </div>

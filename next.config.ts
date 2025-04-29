@@ -1,19 +1,14 @@
-import withPWA from "next-pwa";
+// next.config.ts
+import withPWA from 'next-pwa';
 import type { NextConfig } from 'next';
 
-
 const nextConfig: NextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
+  reactStrictMode: true, // qualquer config padrão do Next.js
+  pwa: {
+    dest: 'public',
+    register: true,
+    skipWaiting: true,
   },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  // outras configs que quiser adicionar
 };
 
-export default withPWA({
-  dest: 'public',
-  register: true,
-  skipWaiting: true,
-})(nextConfig);
+export default withPWA(nextConfig);

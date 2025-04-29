@@ -24,7 +24,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="pt-Br">
+      <head>
+        <link rel="manifest" href="/public/manifest.json" />
+        <link rel="icon" href="/src/assets/icons/192.png" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
           <AuthProvider>

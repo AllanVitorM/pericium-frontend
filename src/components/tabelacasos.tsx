@@ -16,7 +16,7 @@ function parseJwt(token: string): any {
   }
 }
 
-export default function TableCases() {
+export default function TableCases({ reloadKey }: { reloadKey: number }) {
   const [modalAtual, setModalAtual] = useState<string | null>(null);
   const [casos, setCasos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -71,7 +71,7 @@ export default function TableCases() {
   };
   useEffect(() => {
     carregarCasos();
-  }, []);
+  }, [reloadKey]);
 
   return (
     <>
