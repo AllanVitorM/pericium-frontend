@@ -78,4 +78,6 @@ O projeto inclui:
   ├── context/    # Contextos globais (auth, etc.)
   ├── service/    # Serviços e integrações (assinatura de laudos, etc.)
 
+---
+Desenvolvido por Allan Vitor Marques, Antonio Vinicius de Lima, Dougla Lucas Filho, Heloisa Costa, Matheus Ramos
 
