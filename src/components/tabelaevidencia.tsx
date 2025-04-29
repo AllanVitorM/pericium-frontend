@@ -30,20 +30,22 @@ export default function TabelaEvidencia({ caseId, onNext }: Props) {
   const [selectedEvidenciaId, setSelectedEvidenciaId] = useState<string | null>(
     null
   );
-  const fetchEvidencias = async () => {
-    try {
-      const data = await getEvidenciaByCaseId(caseId);
-      setEvidencias(data);
-    } catch (error) {
-      console.error("Erro na busca de evidências.", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+
   useEffect(() => {
     if (!caseId)  {
-    fetchEvidencias();
+      return ;
     }
+    const fetchEvidencias = async () => {
+      try {
+        const data = await getEvidenciaByCaseId(caseId);
+        setEvidencias(data);
+      } catch (error) {
+        console.error("Erro na busca de evidências.", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchEvidencias();
   }, [caseId]);
 
   const visualizarPdf = async (laudoId: string) => {
