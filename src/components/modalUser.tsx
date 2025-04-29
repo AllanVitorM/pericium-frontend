@@ -51,7 +51,7 @@ export default function ModalUser({ isOpen, onClose }: modalNovoUsuarioProps) {
     if (temporaryPassword) {
       const timer = setTimeout(() => {
         handleClose();
-      }, 1000);
+      }, 10000);
       return () => clearTimeout(timer);
     }
   }, [temporaryPassword]);
