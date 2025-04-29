@@ -57,3 +57,21 @@ export const getProfile = async () => {
 
   return response.data;
 };
+export const updatePassword = async (oldPassword: string, newPassword: string) => {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    throw new Error("Token JWT não encontrado.");
+  }
+
+  const response = await api.put("/auth/update-password", {
+    oldPassword,
+    newPassword,
+  }, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data;
+};
