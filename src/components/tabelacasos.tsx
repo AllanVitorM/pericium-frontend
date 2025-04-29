@@ -176,7 +176,6 @@ export default function TableCases({ reloadKey }: { reloadKey: number }) {
           isOpen={modalAtual === "envioEvidencia"}
           onClose={() => {
             fecharModal();
-            fetchEvidencias();
           }}
           casoSelecionado={casoSelecionado}
         />
@@ -186,7 +185,6 @@ export default function TableCases({ reloadKey }: { reloadKey: number }) {
           isOpen
           onClose={() => {
             fecharModal();
-            fetchEvidencias();
           }}
           onNext={() => handleNext("laudo", evidenciaSelecionada)}
           evidencia={evidenciaSelecionada}
