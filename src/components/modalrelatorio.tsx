@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { criarLaudo } from "@/service/laudo";
+import { criarRelatorio } from "@/service/relatorio";
 
-interface ModalLaudoProps {
+interface modalRelatorioProps {
   isOpen: boolean;
   onClose: () => void; 
-  evidenciaId: string;
+  caseId: string;
 }
 
 export function parseJwt(token: string): any {
@@ -16,20 +16,21 @@ export function parseJwt(token: string): any {
   }
 }
 
-export default function ModalLaudo({ isOpen, onClose, evidenciaId}: ModalLaudoProps) {
+export default function ModalRelatorio({ isOpen, onClose, caseId}: modalRelatorioProps) {
+  console.log("caseId recebido no ModalRelatorio:", caseId);
   const [title, setTitle] = useState("");
   const [descricao, setDescricao] = useState("")
 
-  const handleCreateLaudo = async () => {
+  const handleCreateRelatorio = async () => {
     
     if (!title || !descricao) {
       alert("PREENCHA TODOS OS CAMPOS!");
       return;
     }
-    console.log("Enviando para criarLaudo:", {
+    console.log("Enviando para criar relatorio:", {
       title,
       descricao,
-      evidenciaId,
+      caseId,
     });
     const token = localStorage.getItem("token");
     const usuario = token ? parseJwt(token) : null;
@@ -40,13 +41,13 @@ export default function ModalLaudo({ isOpen, onClose, evidenciaId}: ModalLaudoPr
     }
   
     try {
-      await criarLaudo({
+      await criarRelatorio({
         title,
         descricao,
-        evidenciaId: evidenciaId,
+        caseId: caseId,
         userId: usuario.sub
       });
-      alert("Laudo gerado com sucesso!");
+      alert("Relatório gerado com sucesso!");
       onClose();
     } catch (error: any) {
       console.error("Erro ao criar laudo", error);
@@ -63,7 +64,7 @@ export default function ModalLaudo({ isOpen, onClose, evidenciaId}: ModalLaudoPr
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white p-6 rounded-xl w-[500px] shadow-lg">
-        <h2 className="text-2xl font-bold mb-6">Gerar Laudo</h2>
+        <h2 className="text-2xl font-bold mb-6">Gerar Relatório</h2>
 
         <div className="flex flex-col gap-4">
           {/* Título */}
@@ -101,7 +102,7 @@ export default function ModalLaudo({ isOpen, onClose, evidenciaId}: ModalLaudoPr
           </button>
           <button
             className="flex items-center gap-2 bg-[#002D62] text-white px-6 py-2 rounded hover:bg-[#001f47]"
-            onClick={handleCreateLaudo}
+            onClick={handleCreateRelatorio}
           >
             Gerar &rarr;
           </button>

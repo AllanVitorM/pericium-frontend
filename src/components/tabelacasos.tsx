@@ -4,7 +4,8 @@ import ModalEditarEvidencia from "@/components/modaleditarevidencia";
 import ModalLaudo from "@/components/modallaudo";
 import { useState, useEffect } from "react";
 import { getCaso } from "@/service/casos";
-import { Eye, CircleX } from "lucide-react";
+import { Eye, Trash2 } from "lucide-react";
+import ModalRelatorio from "@/components/modalrelatorio";
 
 function parseJwt(token: string): any {
   try {
@@ -28,7 +29,12 @@ export default function TableCases() {
   const fecharModal = () => setModalAtual(null);
 
   const handleNext = (
-    modalName: "envioEvidencia" | "caso" | "editarEvidencia" | "laudo",
+    modalName:
+      | "envioEvidencia"
+      | "caso"
+      | "editarEvidencia"
+      | "laudo"
+      | "relatorio",
     data?: any
   ) => {
     if ((modalName === "editarEvidencia" || modalName === "laudo") && data) {
@@ -125,12 +131,29 @@ export default function TableCases() {
                     <div className="flex items-center gap-3">
                       <Eye
                         onClick={() => {
-                          setCasoSelecionado(caso);
-                          abrirModal("caso");
+                          if (caso.status !== "Concluído") {
+                            setCasoSelecionado(caso);
+                            abrirModal("caso");
+                          }
                         }}
-                        className="cursor-pointer text-blue-600 hover:scale-110 transition-transform"
+                        className={`transition-transform ${
+                          caso.status === "Concluído"
+                            ? "text-gray-400 cursor-not-allowed"
+                            : "cursor-pointer text-blue-600 hover:scale-110"
+                        }`}
                       />
-                      <CircleX className="cursor-pointer text-red-500 hover:scale-110 transition-transform" />
+                      <Trash2
+                        onClick={() => {
+                          if (caso.status !== "Concluído") {
+                            // aqui você colocaria a lógica de deletar
+                          }
+                        }}
+                        className={`transition-transform ${
+                          caso.status === "Concluído"
+                            ? "text-gray-400 cursor-not-allowed"
+                            : "cursor-pointer text-red-500 hover:scale-110"
+                        }`}
+                      />
                     </div>
                   </td>
                 </tr>
@@ -166,6 +189,13 @@ export default function TableCases() {
           isOpen={modalAtual === "laudo"}
           evidenciaId={evidenciaSelecionada._id}
           onClose={fecharModal}
+        />
+      )}
+      {modalAtual === "relatorio" && casoSelecionado && (
+        <ModalRelatorio
+          isOpen={true}
+          onClose={fecharModal}
+          caseId={casoSelecionado._id}
         />
       )}
     </>

@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { getEvidenciaByCaseId, deleteEvidencia } from "@/service/evidencia";
-import { Eye, CircleX, FileText } from "lucide-react";
+import { Eye, Trash2, FileText, Search } from "lucide-react";
+import { getByPdf } from "@/service/laudo";
 
 interface Evidencia {
   _id: string;
@@ -12,6 +13,10 @@ interface Evidencia {
   tipo?: string;
   peritoResponsavel?: string;
   descricao?: string;
+}
+
+interface visualizarLaudoProps {
+  laudoId: string;
 }
 
 interface Props {
@@ -43,6 +48,18 @@ export default function TabelaEvidencia({ caseId, onNext }: Props) {
     fetchEvidencias();
   }, [caseId]);
 
+
+  const visualizarPdf = async (laudoId: string) => {
+    try {
+      const data = await getByPdf(laudoId);
+      const pdfUrl = data.pdfUrl;
+      window.open(pdfUrl, "_blank");
+    } catch (error) {
+      console.error("Erro ao visualizar PDF: ", error);
+    }
+  };
+
+
   const handleDelete = async (id: string) => {
     if (confirm("Tem certeza que deseja deletar esta evidência?")) {
       try {
@@ -68,20 +85,23 @@ export default function TabelaEvidencia({ caseId, onNext }: Props) {
               Data
             </th>
             <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">
-              Ações
+              Ações Evidências
+            </th>
+            <th>
+              Ações Laudos
             </th>
           </tr>
         </thead>
         <tbody>
           {loading ? (
             <tr>
-              <td colSpan={3} className="px-4 py-6 text-center">
+              <td colSpan={4} className="px-4 py-6 text-center">
                 Carregando evidências...
               </td>
             </tr>
           ) : evidencias.length === 0 ? (
             <tr>
-              <td colSpan={3} className="px-4 py-6 text-center">
+              <td colSpan={4} className="px-4 py-6 text-center">
                 Nenhuma evidência encontrada
               </td>
             </tr>
@@ -105,13 +125,25 @@ export default function TabelaEvidencia({ caseId, onNext }: Props) {
                       onClick={() => onNext("editarEvidencia", evidencia)}
                       className="cursor-pointer text-blue-600 hover:scale-110 transition-transform"
                     />
+                    <Trash2
+                      onClick={() => handleDelete(evidencia._id)}
+                      className="cursor-pointer text-red-500 hover:scale-110 transition-transform"
+                    />
+                  </div>
+                </td>
+                <td>
+                <div className="flex items-center gap-4 ml-10">
                     <FileText
                       onClick={() => {
                         setSelectedEvidenciaId(evidencia._id);
                         onNext("laudo", evidencia);
                       }}
                     />
-                    <CircleX
+                    <Search 
+                    onClick={() => visualizarPdf(evidencia._id)}
+                    className="cursor-pointer text-green-600 hover:scale-110 transition-transform"
+                    />
+                    <Trash2
                       onClick={() => handleDelete(evidencia._id)}
                       className="cursor-pointer text-red-500 hover:scale-110 transition-transform"
                     />

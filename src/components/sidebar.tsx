@@ -20,7 +20,7 @@ export default function Sidebar() {
   };
 
   const pages = [
-    { name: "Dashboard", path: "/dashboard" },
+    { name: "Dashboard", path: "/home" },
     { name: "Casos", path: "/casos" },
     { name: "Funcionários", path: "/criarUsuarios" },
     { name: "Perfil", path: "/perfil" },
