@@ -7,7 +7,7 @@ import { ButtonLogin } from "./button";
 export default function LoginForm() {
   const [cpf, setCpf] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [, setError] = useState("");
   const { login } = useAuth();
 
   const handlesubmit = async (e: React.FormEvent) => {
