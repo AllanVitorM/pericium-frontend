@@ -92,7 +92,9 @@ export default function ModalCaso({
         {/* Título e Botão de Relatório */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
           <h2 className="text-2xl font-bold">Editar Caso</h2>
-          <button className="flex items-center gap-2 bg-[#002D62] text-white text-sm px-4 py-2 rounded">
+          <button 
+          onClick={() => onNext("relatorio", { ...casoData, _id: casoId })}
+          className="flex items-center gap-2 bg-[#002D62] text-white text-sm px-4 py-2 rounded">
             <FileText size={16} />
             Relatório
           </button>

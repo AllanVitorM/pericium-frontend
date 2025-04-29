@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Pericium
 
-## Getting Started
+**Pericium** é uma plataforma web moderna para gestão de **perícias odontolegais**, criada para facilitar o registro, análise, geração de laudos e gestão de casos forenses de forma rápida e segura.
 
-First, run the development server:
+Este projeto foi desenvolvido utilizando **Next.js 14** com suporte a **TypeScript**, aplicando boas práticas de organização de código, autenticação, controle de contexto e dashboard personalizado.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🚀 Tecnologias utilizadas
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- [Next.js](https://nextjs.org/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [React Context API](https://react.dev/learn/scaling-up-with-reducer-and-context)
+- [PostCSS](https://postcss.org/)
+- [ESLint](https://eslint.org/)
+- [Vercel Hosting](https://vercel.com/)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📦 Scripts disponíveis
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+No diretório do projeto, você pode rodar:
 
-## Learn More
+### `npm run dev`
+Inicia o servidor de desenvolvimento.  
+Abra [http://localhost:3000](http://localhost:3000) para visualizar no navegador.
 
-To learn more about Next.js, take a look at the following resources:
+### `npm run build`
+Cria a aplicação para produção na pasta `.next/`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### `npm run start`
+Inicia o servidor de produção.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### `npm run lint`
+Roda o ESLint para análise de código.
 
-## Deploy on Vercel
+## 🔒 Autenticação
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+O Pericium conta com um sistema de autenticação protegido por Guards, garantindo que apenas usuários autorizados acessem funcionalidades sensíveis como geração de laudos e assinaturas digitais.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📋 Funcionalidades principais
+
+- Cadastro de casos odontolegais
+- Anexação de evidências
+- Geração de laudos periciais com assinatura
+- Dashboard para visualização e gestão de processos
+- Controle de acesso e autenticação de usuários
+
+## 🛠️ Configurações e dependências
+
+O projeto inclui:
+
+- `eslint.config.mjs`: Configurações de linting
+- `next.config.ts`: Configurações customizadas do Next.js
+- `postcss.config.mjs`: Configurações de PostCSS
+- `tsconfig.json`: Configuração do TypeScript
+- `.gitignore`: Padrões para ignorar arquivos no Git
+
+## 👨‍💻 Como contribuir
+
+1. Faça um fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/nova-feature`)
+3. Commit suas mudanças (`git commit -m 'feat: adiciona nova feature'`)
+4. Push na sua branch (`git push origin feature/nova-feature`)
+5. Abra um Pull Request
+
+
+## 📁 Estrutura de Pastas
+
+```plaintext
+/public
+  ├── file.svg
+  ├── globe.svg
+  ├── next.svg
+  ├── vercel.svg
+  ├── window.svg
+
+/src
+  ├── app/        # Páginas e rotas do projeto
+  ├── assets/     # Arquivos de mídia e ícones
+  ├── components/ # Componentes reutilizáveis
+  ├── context/    # Contextos globais (auth, etc.)
+  ├── service/    # Serviços e integrações (assinatura de laudos, etc.)
+
+---
+Desenvolvido por Allan Vitor Marques, Antonio Vinicius de Lima, Dougla Lucas Filho, Heloisa Costa, Matheus Ramos
+

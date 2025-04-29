@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Sidebar from "@/components/sidebar";
-
-export default function PerfilPage() {
+<<<<<<< HEAD
+=
   const [form, setForm] = useState({
     nome: "",
     cargo: "",
@@ -13,13 +13,46 @@ export default function PerfilPage() {
     senha: "",
   });
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    async function fetchProfile() {
+      try {
+        const profile = await getProfile();
+        setForm({
+          nome: profile.name || "",
+          cargo: profile.role || "",
+          cpf: profile.cpf || "",
+          id: profile.id ? String(profile.id) : "",
+          email: profile.email || "",
+          senha: "", 
+        });
+      } catch (error) {
+        console.error("Erro ao buscar perfil:", error);
+      }
+    }
+
+    fetchProfile();
+  }, []);
+
+  async function handleSavePassword(oldPassword: string, newPassword: string) {
+    try {
+      await updatePassword(oldPassword, newPassword);
+      alert("Senha atualizada com sucesso!");
+    } catch (error) {
+      console.error("Erro ao atualizar a senha:", error);
+      alert("Erro ao atualizar a senha. Verifique se a senha atual está correta.");
+    }
+  }
+
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   }
 
-  function handleSave() {
-    console.log("Dados salvos:", form);
+  function handleLogout() {
+    console.log("Encerrar sessão clicado!");
+    // Aqui você pode limpar tokens, redirecionar, etc.
   }
 
   return (
@@ -28,14 +61,9 @@ export default function PerfilPage() {
         <Sidebar />
       </div>
 
-      {/* Main Content */}
       <main className="flex-1 bg-white p-4 sm:p-6">
-
-        {/* Formulário */}
         <div className="w-full max-w-md mx-auto mt-6 bg-[#B6C0C7] rounded-md p-5 shadow-md text-sm">
-          <h2 className="text-2xl font-bold mb-6 text-center text-black">
-            Perfil
-          </h2>
+          <h2 className="text-2xl font-bold mb-6 text-center text-black">Perfil</h2>
 
           <form className="space-y-4">
             {[
@@ -44,22 +72,19 @@ export default function PerfilPage() {
               { label: "CPF", name: "cpf" },
               { label: "ID", name: "id" },
               { label: "E-mail", name: "email" },
-              { label: "Senha", name: "senha", type: "password" },
-            ].map(({ label, name, type = "text" }) => (
+            ].map(({ label, name }) => (
               <div key={name}>
-                <label
-                  htmlFor={name}
-                  className="block text-sm font-medium text-black mb-1"
-                >
+                <label htmlFor={name} className="block text-sm font-medium text-black mb-1">
                   {label}
                 </label>
                 <input
-                  type={type}
+                  type="text"
                   name={name}
                   id={name}
                   value={form[name as keyof typeof form]}
                   onChange={handleChange}
-                  className="block w-full px-4 py-2 border border-gray-400 rounded-md bg-white text-black text-base focus:outline-none focus:ring-2 focus:ring-[#0B2D3E]"
+                  disabled
+                  className="block w-full px-4 py-2 border border-gray-400 rounded-md bg-gray-200 text-black text-base cursor-not-allowed"
                 />
               </div>
             ))}
@@ -71,17 +96,27 @@ export default function PerfilPage() {
 
           <div className="flex flex-col gap-2 mt-6">
             <button
-              onClick={handleSave}
+              onClick={() => setIsModalOpen(true)}
               className="bg-[#0B2D3E] text-white py-2 rounded hover:bg-[#09202D] transition-colors"
             >
-              Guardar
+              Alterar senha
             </button>
-            <button className="bg-[#B6C0C8] py-2 rounded text-black hover:bg-[#9da7af] transition-colors">
+            <button
+              onClick={handleLogout}
+              className="bg-[#B6C0C8] py-2 rounded text-black hover:bg-[#9da7af] transition-colors"
+            >
               Encerrar sessão
             </button>
           </div>
         </div>
       </main>
+
+      {/* Modal para alterar senha */}
+      <ModalSenha
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleSavePassword}
+      />
     </div>
   );
 }
