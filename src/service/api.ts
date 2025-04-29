@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'https://pericium-backend-production.up.railway.app',
+    baseURL: 'pericium-backend-production.up.railway.app',
 });
 
 api.interceptors.request.use((config) => {
