@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Sidebar from "@/components/sidebar";
-import AdminHeader from "@/components/headeradm"; // ajuste o path conforme a localização real do componente
 
 export default function PerfilPage() {
   const [form, setForm] = useState({

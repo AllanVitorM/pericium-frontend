@@ -6,7 +6,34 @@ import { useState, useEffect } from "react";
 import { getCaso } from "@/service/casos";
 import { Eye, CircleX } from "lucide-react";
 
-function parseJwt(token: string): any {
+// Tipagem dos dados de um Caso
+type Caso = {
+  _id: string;
+  titulo: string;
+  dataAbertura: string;
+  status: string;
+  userId?: {
+    _id: string;
+    name: string;
+  };
+  [key: string]: unknown;
+};
+
+// Tipagem dos dados de uma Evidência (simples por enquanto)
+type Evidencia = {
+  _id: string;
+  title: string;            // Adicionando
+  dateRegister: string;     // Adicionando
+  [key: string]: unknown;
+};
+
+// Tipagem do payload do JWT
+type UsuarioJWT = {
+  sub: string;
+  role: "ADMIN" | "PERITO" | "ASSISTENTE" | string;
+};
+
+function parseJwt(token: string): UsuarioJWT | null {
   try {
     return JSON.parse(atob(token.split(".")[1]));
   } catch (e) {
@@ -15,26 +42,26 @@ function parseJwt(token: string): any {
   }
 }
 
+
 export default function TableCases() {
   const [modalAtual, setModalAtual] = useState<string | null>(null);
-  const [casos, setCasos] = useState<any[]>([]);
+  const [casos, setCasos] = useState<Caso[]>([]);
   const [loading, setLoading] = useState(true);
-  const [casoSelecionado, setCasoSelecionado] = useState<any | null>(null);
-  const [evidenciaSelecionada, setEvidenciaSelecionada] = useState<any | null>(
-    null
-  );
+  const [casoSelecionado, setCasoSelecionado] = useState<Caso | null>(null);
+  const [evidenciaSelecionada, setEvidenciaSelecionada] =
+    useState<Evidencia | null>(null);
 
   const abrirModal = (nome: string) => setModalAtual(nome);
   const fecharModal = () => setModalAtual(null);
 
   const handleNext = (
     modalName: "envioEvidencia" | "caso" | "editarEvidencia" | "laudo",
-    data?: any
-  ) => {
+    data?: unknown
+  ) =>{
     if ((modalName === "editarEvidencia" || modalName === "laudo") && data) {
-      setEvidenciaSelecionada(data);
+      setEvidenciaSelecionada(data as Evidencia);
     } else if (data) {
-      setCasoSelecionado(data);
+      setCasoSelecionado(data as Caso);
     }
     setModalAtual(modalName);
   };
@@ -55,7 +82,7 @@ export default function TableCases() {
           usuario.role === "ADMIN"
             ? todoscasos
             : todoscasos.filter(
-                (caso: any) => caso.userId?._id === usuario.sub
+                (caso: Caso) => caso.userId?._id === usuario.sub
               );
 
         setCasos(casosFiltrados);
@@ -144,15 +171,23 @@ export default function TableCases() {
         isOpen={modalAtual === "caso"}
         onClose={fecharModal}
         onNext={handleNext}
-        casoId={casoSelecionado?._id}
+        casoId={casoSelecionado?._id ?? ""}
       />
       {modalAtual === "envioEvidencia" && casoSelecionado && (
         <ModalEnvioEvidencia
-          isOpen={modalAtual === "envioEvidencia"}
+          isOpen
           onClose={fecharModal}
-          casoSelecionado={casoSelecionado}
+          casoSelecionado={{
+            title: casoSelecionado.titulo,
+            descricao: casoSelecionado.status,
+            tipo: "Tipo Exemplo",
+            local: "Local Exemplo",
+            dateRegister: casoSelecionado.dataAbertura,
+            caseId: casoSelecionado._id,
+          }}
         />
       )}
+
       {modalAtual === "editarEvidencia" && evidenciaSelecionada && (
         <ModalEditarEvidencia
           isOpen
