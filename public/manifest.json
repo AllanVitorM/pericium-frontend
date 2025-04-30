@@ -8,57 +8,57 @@
   "description": "Site para peritos de odontolegais.",
   "icons": [
     {
-      "src": "/assets/icons/100.png",
+      "src": "/icons/100.png",
       "type": "image/png",
       "sizes": "100x100"
     },
     {
-      "src": "/assets/icons/114.png",
+      "src": "/icons/114.png",
       "type": "image/png",
       "sizes": "114x114"
     },
     {
-      "src": "/assets/icons/120.png",
+      "src": "/icons/120.png",
       "type": "image/png",
       "sizes": "120x120"
     },
     {
-      "src": "/assets/icons/128.png",
+      "src": "/icons/128.png",
       "type": "image/png",
       "sizes": "128x128"
     },
     {
-      "src": "/assets/icons/152.png",
+      "src": "/icons/152.png",
       "type": "image/png",
       "sizes": "152x152"
     },
     {
-      "src": "/assets/icons/167.png",
+      "src": "/icons/167.png",
       "type": "image/png",
       "sizes": "167x167"
     },
     {
-      "src": "/assets/icons/180.png",
+      "src": "/icons/180.png",
       "type": "image/png",
       "sizes": "180x180"
     },
     {
-      "src": "/assets/icons/192.png",
+      "src": "/icons/192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "/assets/icons/256.png",
+      "src": "/icons/256.png",
       "type": "image/png",
       "sizes": "256x256"
     },
     {
-      "src": "/assets/icons/512.png",
+      "src": "/icons/512.png",
       "type": "image/png",
       "sizes": "512x512"
     },
     {
-      "src": "/assets/icons/1024.png",
+      "src": "/icons/1024.png",
       "type": "image/png",
       "sizes": "1024x1024"
     }
