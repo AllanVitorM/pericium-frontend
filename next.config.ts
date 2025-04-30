@@ -1,8 +1,9 @@
 import withPWA from "next-pwa";
 import type { NextConfig } from 'next';
 
-
-const nextConfig: NextConfig = {
+const Config: NextConfig = {
+  reactStrictMode: true,
+  swcMinify: true,
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -15,4 +16,4 @@ export default withPWA({
   dest: 'public',
   register: true,
   skipWaiting: true,
-})(nextConfig);
+})(Config);

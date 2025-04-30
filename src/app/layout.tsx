@@ -28,6 +28,7 @@ export default function RootLayout({
       <head>
         <link rel="manifest" href="/public/manifest.json" />
         <link rel="icon" href="/src/assets/icons/192.png" />
+        <meta name="theme-color" content="#FFFFFF" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
