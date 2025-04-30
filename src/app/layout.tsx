@@ -26,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="pt-Br">
       <head>
-        <link rel="manifest" href="/public/manifest.json" />
+        <link rel="manifest" href="/manifest.json" />
         <link rel="icon" href="/src/assets/icons/192.png" />
         <meta name="theme-color" content="#FFFFFF" />
       </head>
