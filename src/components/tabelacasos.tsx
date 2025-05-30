@@ -2,6 +2,7 @@ import ModalCaso from "@/components/modalcasos";
 import ModalEnvioEvidencia from "@/components/modalenvioevidencia";
 import ModalEditarEvidencia from "@/components/modaleditarevidencia";
 import ModalLaudo from "@/components/modallaudo";
+import ModalEnvioVitima from "./modalenviovitima";
 import { useState, useEffect } from "react";
 import { getCaso } from "@/service/casos";
 import { Eye, Trash2 } from "lucide-react";
@@ -33,6 +34,7 @@ export default function TableCases({ reloadKey }: { reloadKey: number }) {
       | "envioEvidencia"
       | "caso"
       | "editarEvidencia"
+      | "envioVitima"
       | "laudo"
       | "relatorio",
     data?: any
@@ -180,6 +182,17 @@ export default function TableCases({ reloadKey }: { reloadKey: number }) {
           casoSelecionado={casoSelecionado}
         />
       )}
+
+      {modalAtual === "envioVitima" && casoSelecionado && (
+        <ModalEnvioVitima
+          isOpen={modalAtual === "envioVitima"}
+          onClose={() => {
+            fecharModal();
+          }}
+          casoSelecionado={casoSelecionado}
+        />
+      )} {console.log(modalAtual)}
+
       {modalAtual === "editarEvidencia" && evidenciaSelecionada && (
         <ModalEditarEvidencia
           isOpen

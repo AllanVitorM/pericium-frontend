@@ -1,14 +1,14 @@
 import api from "@/service/api"
 
-interface CreateEvidenciaDTO {
-    title: string;
-    descricao: string;
-    tipo: string;
-    local: string;
-    dateRegister: string
-    imageUrl: string;
-    caseId: string;
-  }
+// interface CreateEvidenciaDTO {
+//     title: string;
+//     descricao: string;
+//     tipo: string;
+//     local: string;
+//     dateRegister: string
+//     imageUrl: string;
+//     caseId: string;
+//   }
   interface Evidencia {
     _id: string;
     title: string;

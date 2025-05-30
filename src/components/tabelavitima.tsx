@@ -1,18 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getEvidenciaByCaseId, deleteEvidencia } from "@/service/evidencia";
-import { Eye, Trash2, FileText, Search } from "lucide-react";
-import { getByPdf } from "@/service/laudo";
+import { getVitimaByCaseId } from "@/service/vitima";
+import { Eye } from "lucide-react";
 
-interface Evidencia {
-  _id: string;
-  title: string;
-  dateRegister: string;
-  local?: string;
-  tipo?: string;
-  peritoResponsavel?: string;
-  descricao?: string;
+
+interface Vitima {
+  nome: string;
+  genero: string;
+  documento: number;
+  etnia: "BRANCO" | "PRETO" | "AMARELO" | "INDIGENA";
 }
 
 // interface visualizarLaudoProps {
@@ -21,55 +18,47 @@ interface Evidencia {
 
 interface Props {
   caseId: string;
-  onNext: (view: string, evidencia?: Evidencia) => void;
+  onNext: (view: string, vitima?: Vitima) => void;
 }
 
-export default function TabelaEvidencia({ caseId, onNext }: Props) {
-  const [evidencias, setEvidencias] = useState<Evidencia[]>([]);
+export default function TabelaVitima({ caseId, onNext }: Props) {
+  const [vitimas, setVitimas] = useState<Vitimas[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedEvidenciaId, setSelectedEvidenciaId] = useState<string | null>(
-    null
-  );
+//   const [selectedVitimaId, setSelectedVitimaId] = useState<string | null>(
+//     null
+//   );
 
   useEffect(() => {
     if (!caseId)  {
       return ;
     }
-    const fetchEvidencias = async () => {
+    const fetchVitimas = async () => {
       try {
-        const data = await getEvidenciaByCaseId(caseId);
-        setEvidencias(data);
+        const data = await getVitimaByCaseId(caseId);
+        setVitimas(data);
+        console.log(data)
       } catch (error) {
-        console.error("Erro na busca de evidências.", error);
+        console.error("Erro na busca de Vitimas.", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchEvidencias();
+    fetchVitimas();
   }, [caseId]);
 
-  const visualizarPdf = async (laudoId: string) => {
-    try {
-      const data = await getByPdf(laudoId);
-      const pdfUrl = data.pdfUrl;
-      window.open(pdfUrl, "_blank");
-    } catch (error) {
-      console.error("Erro ao visualizar PDF: ", error);
-    }
-  };
 
-  const handleDelete = async (id: string) => {
-    if (confirm("Tem certeza que deseja deletar esta evidência?")) {
-      try {
-        await deleteEvidencia(id);
-        alert("Evidência deletada com sucesso!");
-        setEvidencias((prev) => prev.filter((ev) => ev._id !== id));
-      } catch (error) {
-        console.error("Erro ao deletar evidência:", error);
-        alert("Erro ao deletar evidência.");
-      }
-    }
-  };
+//   const handleDelete = async (id: string) => {
+//     if (confirm("Tem certeza que deseja deletar esta evidência?")) {
+//       try {
+//         await deleteEvidencia(id);
+//         alert("Evidência deletada com sucesso!");
+//         setEvidencias((prev) => prev.filter((ev) => ev._id !== id));
+//       } catch (error) {
+//         console.error("Erro ao deletar evidência:", error);
+//         alert("Erro ao deletar evidência.");
+//       }
+//     }
+//   };
 
   return (
     <div className="w-full overflow-x-auto rounded border border-gray-300">
@@ -77,15 +66,17 @@ export default function TabelaEvidencia({ caseId, onNext }: Props) {
         <thead>
           <tr className="bg-[#B6C0C7] text-gray-800">
             <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">
-              Título
+              CPF
             </th>
             <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">
-              Data
+              NOME
             </th>
             <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">
-              Ações Evidências
+              ETNIA
             </th>
-            <th>Ações Laudos</th>
+            <th className="text-left px-4 py-3 font-semibold whitespace-nowrap">
+              Ações Vitimas
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -95,39 +86,42 @@ export default function TabelaEvidencia({ caseId, onNext }: Props) {
                 Carregando evidências...
               </td>
             </tr>
-          ) : evidencias.length === 0 ? (
+          ) : vitimas.length === 0 ? (
             <tr>
               <td colSpan={4} className="px-4 py-6 text-center">
-                Nenhuma evidência encontrada
+                Nenhuma vitima encontrada
               </td>
             </tr>
           ) : (
-            evidencias.map((evidencia, i) => (
+            vitimas.map((vitima, i) => (
               <tr
-                key={evidencia._id}
+                key={vitima._id}
                 className={`${
                   i % 2 === 0 ? "bg-[#E8EBED]" : "bg-[#B6C0C7]"
                 } hover:bg-gray-200 transition-colors`}
               >
                 <td className="px-4 py-3 whitespace-nowrap">
-                  {evidencia.title}
+                  {vitima.nome}
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap">
-                  {new Date(evidencia.dateRegister).toLocaleDateString()}
+                  {vitima.documento}
+                </td>
+                 <td className="px-4 py-3 whitespace-nowrap">
+                  {vitima.etnia}
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-4">
                     <Eye
-                      onClick={() => onNext("editarEvidencia", evidencia)}
+                      onClick={() => onNext("editarVitima", vitima)}
                       className="cursor-pointer text-blue-600 hover:scale-110 transition-transform"
                     />
-                    <Trash2
-                      onClick={() => handleDelete(evidencia._id)}
+                    {/* <Trash2
+                      onClick={() => handleDelete(vitima._id)}
                       className="cursor-pointer text-red-500 hover:scale-110 transition-transform"
-                    />
+                    /> */}
                   </div>
                 </td>
-                <td>
+                {/* <td>
                   <div className="flex items-center gap-4 ml-10">
                     <FileText
                       onClick={() => {
@@ -135,16 +129,12 @@ export default function TabelaEvidencia({ caseId, onNext }: Props) {
                         onNext("laudo", evidencia);
                       }}
                     />
-                    <Search
-                      onClick={() => visualizarPdf(evidencia._id)}
-                      className="cursor-pointer text-green-600 hover:scale-110 transition-transform"
-                    />
                     <Trash2
                       onClick={() => handleDelete(evidencia._id)}
                       className="cursor-pointer text-red-500 hover:scale-110 transition-transform"
                     />
                   </div>
-                </td>
+                </td> */}
               </tr>
             ))
           )}

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { getIdCaso, updateCaso, deleteCaso } from "@/service/casos";
 import { FileText } from "lucide-react";
 import TabelaEvidencia from "./tabelaevidencia";
+import TabelaVitima from "./tabelavitima";
 
 interface ModalCasoProps {
   isOpen: boolean;
@@ -17,12 +18,16 @@ export default function ModalCaso({
   onNext,
   casoId,
 }: ModalCasoProps) {
-  const [casoData, setCasoData] = useState<{ titulo: string; descricao: string }>({
+  const [casoData, setCasoData] = useState<{
+    titulo: string;
+    descricao: string;
+  }>({
     titulo: "",
     descricao: "",
   });
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [tabelaSelecionada, setTabelaSelecionada] = useState("");
 
   const handleClose = () => {
     setCasoData({ titulo: "", descricao: "" });
@@ -63,7 +68,9 @@ export default function ModalCaso({
   };
 
   const handleDelete = async () => {
-    const confirmDelete = window.confirm("Tem certeza que deseja deletar este caso?");
+    const confirmDelete = window.confirm(
+      "Tem certeza que deseja deletar este caso?"
+    );
     if (!confirmDelete) return;
 
     setIsLoading(true);
@@ -82,13 +89,14 @@ export default function ModalCaso({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white p-6 sm:p-4 rounded-lg w-full max-w-3xl shadow-lg overflow-y-auto max-h-[90vh]">
+      <div className="bg-[#F5F5F4] p-6 sm:p-4 rounded-lg w-full max-w-3xl shadow-lg overflow-y-auto max-h-[90vh]">
         {/* Título e Botão de Relatório */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
           <h2 className="text-2xl font-bold">Editar Caso</h2>
-          <button 
-          onClick={() => onNext("relatorio", { ...casoData, _id: casoId })}
-          className="flex items-center gap-2 bg-[#002D62] text-white text-sm px-4 py-2 rounded">
+          <button
+            onClick={() => onNext("relatorio", { ...casoData, _id: casoId })}
+            className="flex items-center gap-2 bg-[#002D62] text-white text-sm px-4 py-2 rounded"
+          >
             <FileText size={16} />
             Relatório
           </button>
@@ -103,9 +111,11 @@ export default function ModalCaso({
             type="text"
             value={casoData.titulo}
             disabled={isLoading}
-            onChange={(e) => setCasoData((prev) => ({ ...prev, titulo: e.target.value }))}
+            onChange={(e) =>
+              setCasoData((prev) => ({ ...prev, titulo: e.target.value }))
+            }
             placeholder="Título do caso"
-            className="w-full border border-gray-400 rounded px-3 py-2"
+            className="w-full border border-gray-400 rounded px-3 py-2 "
           />
         </div>
 
@@ -117,22 +127,51 @@ export default function ModalCaso({
             placeholder="Escreva aqui"
             disabled={isLoading}
             value={casoData.descricao}
-            onChange={(e) => setCasoData((prev) => ({ ...prev, descricao: e.target.value }))}
+            onChange={(e) =>
+              setCasoData((prev) => ({ ...prev, descricao: e.target.value }))
+            }
             rows={3}
           />
         </div>
 
+        {/* Filtro selecionar tabela */}
+        <div>
+          <select
+            name="filtro"
+            id="filtro"
+            className="w-full flex items-center justify-center p-3 bg-[#15354B] text-white mb-4 rounded-md"
+            value={tabelaSelecionada}
+            onChange={(e) => setTabelaSelecionada(e.target.value)}
+          >
+            <option value="">Selecione a tabela</option>
+            <option value="vitima">Vitima</option>
+            <option value="evidencia">Evidência</option>
+          </select>
+        </div>
+
         {/* Evidências */}
-        <h3 className="text-lg font-semibold mb-3">Evidências</h3>
+        <h3 className="text-lg font-semibold mb-3">
+          {tabelaSelecionada === "evidencia" ? "Evidências" : "Vitimas"}
+        </h3>
 
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
           <button
-            onClick={() => onNext("envioEvidencia", { ...casoData, caseId: casoId })}
+            onClick={() =>
+              onNext("envioEvidencia", { ...casoData, caseId: casoId })
+            }
             className="bg-[#002C49] text-white px-4 py-2 rounded-full font-medium w-full sm:w-auto"
           >
             + Nova Evidência
           </button>
 
+          <button
+            onClick={() =>
+              onNext("envioVitima", { ...casoData, caseId: casoId })
+            }
+            className="bg-[#002C49] text-white px-4 py-2 rounded-full font-medium w-full sm:w-auto"
+          >
+            + Nova Vítima
+          </button>
           <input
             type="text"
             placeholder="Pesquisar"
@@ -140,7 +179,13 @@ export default function ModalCaso({
           />
         </div>
 
-        <TabelaEvidencia caseId={casoId} onNext={onNext} />
+        <div>
+          {tabelaSelecionada === "evidencia" ? (
+            <TabelaEvidencia caseId={casoId} onNext={onNext} />
+          ) : (
+            <TabelaVitima caseId={casoId} onNext={onNext} />
+          )}
+        </div>
 
         {/* Botões de Ações */}
         <div className="flex flex-col sm:flex-row justify-end gap-3 mt-6">

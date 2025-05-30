@@ -10,7 +10,7 @@ export const login = async (payload: LoginPayload) => {
         const response = await api.post('/auth/login', payload);
         console.log("Dados recebidos do login:", response.data);
         const access_token  = response.data.token;
-
+        console.log(response)
         if (access_token) {
             localStorage.setItem('token', access_token);
             console.log("Token armazenado no localStorage", access_token);

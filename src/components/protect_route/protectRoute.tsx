@@ -40,7 +40,7 @@ export default function ProtectedRoute({
   }, [isAuthenticated, pathname, router, user, allowedRoles, loading]);
 
   if (loading) {
-    return <div>Carregando...</div>; // Ou um spinner bonito
+    return <div>Carregando...</div>;
   }
 
   if (isAuthenticated && (!allowedRoles || allowedRoles.includes(user!.role))) {
