@@ -1,262 +1,131 @@
 import React, { useState, useEffect } from "react";
-import { PenTool, Upload } from "lucide-react";
-import { updateEvidencia } from "@/service/evidencia";
-import { buscarLaudo, assinarLaudo } from "@/service/laudo";
-
-
-function parseJwt(token: string): any {
-  try {
-    return JSON.parse(atob(token.split(".")[1]));
-  } catch (e) {
-    console.error("Erro ao decodificar token jwt", e);
-    return null;
-  }
-}
-
-interface Vitima {
-    NIC: string;
-    nome: string;
-    genero: string;
-    documento: number;
-    endereco: string;
-    etnia: "BRANCO" | "PRETO" | "AMARELO" | "INDIGENA";
-    caseId: string;
-}
+import { updateVitima, deleteVitima } from "@/service/vitima";
 
 interface ModalEditarVitimaProps {
   isOpen: boolean;
   onClose: () => void;
   onNext: () => void;
-  vitima: Vitima | null;
+  vitima: {
+    _id: string;
+    NIC: string;
+    nome: string;
+    genero: string;
+    documento: number;
+  } | null;
+  onUpdate: (vitimaAtualizada: any) => void; // <- ADICIONADO
 }
 
 export default function ModalEditarVitima({
   isOpen,
   onClose,
-  evidencia,
+  vitima,
+  onUpdate, // <- ADICIONADO
 }: ModalEditarVitimaProps) {
-  const [formData, setFormData] = useState<Evidencia>({
-    _id: "",
-    title: "",
-    dateRegister: "",
-    local: "",
-    tipo: "",
-    peritoResponsavel: "",
-    descricao: "",
+  const [formData, setFormData] = useState({
+    NIC: "",
+    nome: "",
+    genero: "",
+    documento: "",
   });
 
-  const [laudoId, setLaudoId] = useState<string | null>(null);
-  const [assinado, setAssinado] = useState(false);
-  const [sucessoAssinatura, setSucessoAssinatura] = useState(false);
+  useEffect(() => {
+    if (vitima) {
+      setFormData({
+        NIC: vitima.NIC,
+        nome: vitima.nome,
+        genero: vitima.genero,
+        documento: vitima.documento.toString(),
+      });
+    }
+  }, [vitima]);
 
   const handleUpdate = async () => {
     try {
-      await updateEvidencia(formData._id, formData);
-      alert("Evidência atualizada com sucesso!");
-      onClose();
-    } catch (error: any) {
-      console.error("Erro ao atualizar a evidência:", error.response?.data || error.message || error);
-      alert("Erro ao atualizar evidência: " + (error.response?.data?.message || error.message));
-    }
-  };
+      if (!vitima?._id) throw new Error("ID da vítima não encontrado");
 
-  useEffect(() => {
-    if (evidencia) {
-      setFormData(evidencia);
-  
-      async function fetchLaudo() {
-        try {
-          const laudo = await buscarLaudo(evidencia._id);
-          if (laudo.length > 0) {
-            const primeiroLaudo = laudo[0];
-            setLaudoId(primeiroLaudo._id);
-  
-            // Verifica se já está assinado
-            if (primeiroLaudo.assinado === true) {
-              setSucessoAssinatura(true);
-            } else {
-              setSucessoAssinatura(false);
-            }
-          } else {
-            console.log("Nenhum laudo encontrado para esta evidência.");
-          }
-        } catch (error) {
-          console.error("Erro ao buscar laudo!", error);
-        }
-      }
-  
-      fetchLaudo();
-    }
-  }, [evidencia]);
-
-  const handleAssinatura = async () => {
-    if (!laudoId) {
-      console.log("Nenhum laudoId disponível para assinatura.");
-      alert("Laudo não encontrado.");
-      return;
-    }
-
-    const token = localStorage.getItem('token');
-    let peritoId: string | null = null
-
-    if (token) {
-      const decoded = parseJwt(token);
-      peritoId = decoded?.sub;
-
-      if (!peritoId) {
-        console.log("Nenhum perito ou admin encontrado");
-        alert("Usuário não autenticado");
+      const documentoNumber = Number(formData.documento);
+      if (isNaN(documentoNumber)) {
+        alert("Documento precisa ser um número válido.");
         return;
       }
-    } else {
-      console.log("Token não encontrado");
-      alert("Usuário não autenticado");
-      return;
-    }
 
-    try {
-      console.log("Tentando assinar o laudo:", laudoId, "com peritoId:", peritoId);
-      setAssinado(true);
+      const updated = await updateVitima(vitima._id, {
+        ...vitima,
+        NIC: formData.NIC,
+        nome: formData.nome,
+        genero: formData.genero,
+        documento: documentoNumber,
+      });
 
-      const response = await assinarLaudo(laudoId, peritoId);
-      if (response.status === 200) {
-        setSucessoAssinatura(true);
-        alert("Laudo assinado com sucesso.");
-      } else {
-        alert("Erro ao assinar o laudo.");
-      }
-    } catch (error) {
-      console.error("Erro ao assinar o laudo", error);
-      alert("Erro ao assinar o laudo amigão!");
-    } finally {
-      setAssinado(false);
+      alert("Vítima atualizada com sucesso!");
+      onUpdate(updated); // <- ADICIONADO
+      onClose();
+    } catch (error: any) {
+      console.error("Erro ao atualizar a vítima:", error.response?.data || error.message);
+      alert("Erro ao atualizar vítima: " + (error.response?.data?.message || error.message));
     }
   };
 
-  if (!isOpen || !evidencia) return null;
+  const handleDelete = async () => {
+    if (!vitima?._id) return;
+
+    const confirmDelete = window.confirm("Tem certeza que deseja excluir esta vítima?");
+    if (!confirmDelete) return;
+
+    try {
+      await deleteVitima(vitima._id);
+      alert("Vítima excluída com sucesso!");
+      onClose();
+    } catch (error: any) {
+      console.error("Erro ao excluir a vítima:", error.response?.data || error.message);
+      alert("Erro ao excluir vítima: " + (error.response?.data?.message || error.message));
+    }
+  };
+
+  if (!isOpen || !vitima) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-[#F5F5F5] p-6 rounded-lg w-full max-w-2xl relative overflow-y-auto max-h-[90vh]">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-          <h2 className="text-2xl font-bold">Editar Evidência</h2>
-          <button
-            onClick={handleAssinatura}
-            disabled={assinado || sucessoAssinatura}
-            className={`flex items-center gap-2 ${
-              sucessoAssinatura ? "bg-green-600" : "bg-[#002D62]"
-            } text-white text-sm px-4 py-2 rounded hover:bg-[#001f47]`}
-          >
-            <PenTool size={16} />
-            {assinado
-              ? "Assinando..."
-              : sucessoAssinatura
-              ? "Assinado"
-              : "Assinar Laudo"}
-          </button>
-        </div>
-
-        {/* Form */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="flex flex-col">
-            <label className="text-sm font-medium">
-              Título <span className="text-red-500">*</span>
-            </label>
+            <label className="text-sm font-medium">NIC</label>
             <input
-              value={formData.title}
+              value={formData.NIC}
               className="p-2 border border-gray-300 rounded"
-              placeholder="Título da evidência"
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, title: e.target.value }))
-              }
+              onChange={(e) => setFormData({ ...formData, NIC: e.target.value })}
             />
           </div>
 
           <div className="flex flex-col">
-            <label className="text-sm font-medium">
-              Data da perícia <span className="text-red-500">*</span>
-            </label>
+            <label className="text-sm font-medium">Nome</label>
             <input
-              type="date"
-              value={formData.dateRegister?.slice(0, 10)}
+              value={formData.nome}
               className="p-2 border border-gray-300 rounded"
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, dateRegister: e.target.value }))
-              }
+              onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
             />
           </div>
 
           <div className="flex flex-col">
-            <label className="text-sm font-medium">
-              Tipo <span className="text-red-500">*</span>
-            </label>
+            <label className="text-sm font-medium">Gênero</label>
             <input
+              value={formData.genero}
               className="p-2 border border-gray-300 rounded"
-              value={formData.tipo || ""}
-              placeholder="Tipo da evidência"
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, tipo: e.target.value }))
-              }
+              onChange={(e) => setFormData({ ...formData, genero: e.target.value })}
             />
           </div>
 
           <div className="flex flex-col">
-            <label className="text-sm font-medium">
-              Local <span className="text-red-500">*</span>
-            </label>
+            <label className="text-sm font-medium">Documento</label>
             <input
+              value={formData.documento}
               className="p-2 border border-gray-300 rounded"
-              value={formData.local || ""}
-              placeholder="Local da evidência"
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, local: e.target.value }))
-              }
+              type="number"
+              onChange={(e) => setFormData({ ...formData, documento: e.target.value })}
             />
-          </div>
-
-          <div className="flex flex-col md:col-span-2">
-            <label className="text-sm font-medium">
-              Perito Responsável <span className="text-red-500">*</span>
-            </label>
-            <input
-              className="p-2 border border-gray-300 rounded"
-              value={formData.peritoResponsavel || ""}
-              placeholder="Nome do perito"
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  peritoResponsavel: e.target.value,
-                }))
-              }
-            />
-          </div>
-
-          <div className="flex flex-col md:col-span-2">
-            <label className="text-sm font-medium">Descrição</label>
-            <textarea
-              className="p-2 border border-gray-300 rounded h-24 resize-none"
-              placeholder="Descrição da evidência"
-              value={formData.descricao || ""}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, descricao: e.target.value }))
-              }
-            />
-          </div>
-
-          <div className="flex flex-col md:col-span-2">
-            <label className="text-sm font-medium mb-1">
-              Faça o upload de imagens ou exames:
-            </label>
-            <label className="flex items-center gap-2 border border-gray-300 rounded px-4 py-2 cursor-pointer w-fit bg-[#E4E7EC]">
-              <Upload size={18} />
-              <span className="text-sm font-medium">Upload</span>
-              <input type="file" className="hidden" />
-            </label>
           </div>
         </div>
 
-        {/* Footer */}
         <div className="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4">
           <button
             onClick={onClose}
@@ -264,6 +133,14 @@ export default function ModalEditarVitima({
           >
             &larr; Cancelar
           </button>
+
+          <button
+            onClick={handleDelete}
+            className="w-full sm:w-auto flex items-center justify-center gap-2 border border-red-500 text-red-600 px-4 py-2 rounded hover:bg-red-100"
+          >
+            Excluir
+          </button>
+
           <button
             onClick={handleUpdate}
             className="w-full sm:w-auto flex items-center justify-center gap-2 bg-[#002D62] text-white px-6 py-2 rounded hover:bg-[#001f47]"

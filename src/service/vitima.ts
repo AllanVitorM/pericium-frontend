@@ -44,3 +44,36 @@ import api from "./api";
       })
       return response.data
     }
+
+    export const updateVitima = async (id: string, data: Partial<Vitima>) => {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    throw new Error("Token JWT não encontrado.");
+  }
+
+  const response = await api.patch(`/vitimas/update/${id}`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data;
+};
+
+// Deletar Evidência
+export const deleteVitima = async (id: string) => {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    throw new Error("Token JWT não encontrado.");
+  }
+
+  const response = await api.delete(`/vitimas/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data;
+};
