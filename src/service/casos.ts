@@ -65,6 +65,7 @@
     });
     return response.data
   }
+  
   export const updateCaso = async (casoId: string, casoData: any) => {
     const token = localStorage.getItem("token");
   

@@ -21,7 +21,9 @@ interface Props {
   onNext: (view: string, vitima?: Vitima) => void;
 }
 
-export default function TabelaVitima({ caseId }: Props) {
+
+export default function TabelaVitima({ caseId, onNext }: Props) {
+
   const [vitimas, setVitimas] = useState<Vitima[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedVitima, setSelectedVitima] = useState<Vitima | null>(null);
