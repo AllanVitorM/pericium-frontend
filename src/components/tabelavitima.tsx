@@ -22,7 +22,7 @@ interface Props {
 }
 
 export default function TabelaVitima({ caseId, onNext }: Props) {
-  const [vitimas, setVitimas] = useState<Vitimas[]>([]);
+  const [vitimas, setVitimas] = useState<Vitima[]>([]);
   const [loading, setLoading] = useState(true);
 //   const [selectedVitimaId, setSelectedVitimaId] = useState<string | null>(
 //     null
@@ -101,10 +101,10 @@ export default function TabelaVitima({ caseId, onNext }: Props) {
                 } hover:bg-gray-200 transition-colors`}
               >
                 <td className="px-4 py-3 whitespace-nowrap">
-                  {vitima.nome}
+                  {vitima.documento}
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap">
-                  {vitima.documento}
+                  {vitima.nome}
                 </td>
                  <td className="px-4 py-3 whitespace-nowrap">
                   {vitima.etnia}

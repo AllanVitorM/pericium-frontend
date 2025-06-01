@@ -37,18 +37,20 @@ export const buscarLaudo = async (evidenciaId: string) => {
     return response.data;
 }
 
-export const getByPdf = async (laudoId: string) => {
+export const getByPdf = async (evidenciaId: string) => {
     const token = localStorage.getItem("token");
 
     if (!token) {
         throw new Error("Token não encontrado.");
     }
 
-    const response = await api.get(`/laudos/pdf/${laudoId}`, {
+    const response = await api.get(`/laudos/pdf/evidencia/${evidenciaId}`, {
         headers: {
             Authorization: `Bearer ${token}`
         }
     });
 
+
+    console.log("passou aqui", response.data)
     return response.data
 }

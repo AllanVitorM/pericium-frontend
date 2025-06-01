@@ -13,6 +13,7 @@ interface Evidencia {
   tipo?: string;
   peritoResponsavel?: string;
   descricao?: string;
+  laudoId: string;
 }
 
 // interface visualizarLaudoProps {
@@ -32,8 +33,8 @@ export default function TabelaEvidencia({ caseId, onNext }: Props) {
   );
 
   useEffect(() => {
-    if (!caseId)  {
-      return ;
+    if (!caseId) {
+      return;
     }
     const fetchEvidencias = async () => {
       try {
@@ -49,6 +50,12 @@ export default function TabelaEvidencia({ caseId, onNext }: Props) {
   }, [caseId]);
 
   const visualizarPdf = async (laudoId: string) => {
+    console.log("ID do Laudo:", laudoId);
+    if (!laudoId) {
+      console.error("LaudoId está undefined!");
+      return;
+    }
+
     try {
       const data = await getByPdf(laudoId);
       const pdfUrl = data.pdfUrl;

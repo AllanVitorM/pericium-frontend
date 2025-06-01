@@ -36,8 +36,9 @@ export default function TableCases({ reloadKey }: { reloadKey: number }) {
       | "editarEvidencia"
       | "envioVitima"
       | "laudo"
+      | "odontograma"
       | "relatorio",
-    data?: any
+    data?: string,
   ) => {
     if ((modalName === "editarEvidencia" || modalName === "laudo") && data) {
       setEvidenciaSelecionada(data);

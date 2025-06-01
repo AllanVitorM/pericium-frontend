@@ -15,7 +15,7 @@ export const login = async (payload: LoginPayload) => {
             localStorage.setItem('token', access_token);
             console.log("Token armazenado no localStorage", access_token);
         }
-    
+        console.log(access_token)
         return { access_token }
     
     } catch (error: any) {
