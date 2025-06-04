@@ -9,24 +9,47 @@ import { useState } from "react";
 
 export default function FuncionariosPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [refreshTable, setRefreshTable] = useState(false);
 
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+  const openModal = () => {
+    setSelectedUser(null);
+    setIsModalOpen(true);
+  };
+
+  const openModalWithUser = (user: any) => {
+    setSelectedUser(user);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedUser(null);
+  };
+
+  const handleRefresh = () => {
+    setRefreshTable(prev => !prev);
+  };
 
   return (
     <ProtectedRoute allowedRoles={["ADMIN"]}>
       <div className="flex h-screen">
         <div className="lg:w-64">
-            <Sidebar />
+          <Sidebar />
         </div>
         <main className="flex-1 bg-white p-6 overflow-y-auto">
           <AdminHeader />
-          <ButtonandSearch text="Novo Usuário" onClick={openModal}/>
-          <TableSection />
+          <ButtonandSearch text="Novo Usuário" onClick={openModal} />
+          <TableSection onVisualizar={openModalWithUser} refreshTrigger={refreshTable} />
         </main>
       </div>
 
-      <ModalUser isOpen={isModalOpen} onClose={closeModal} />
+      <ModalUser
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        usuario={selectedUser}
+        onRefresh={handleRefresh}
+      />
     </ProtectedRoute>
   );
 }

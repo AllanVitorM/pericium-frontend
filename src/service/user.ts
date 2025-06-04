@@ -75,3 +75,20 @@ export const updatePassword = async (oldPassword: string, newPassword: string) =
 
   return response.data;
 };
+
+export const deleteUser = async (cpf: string) => {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    throw new Error("Token JWT não encontrado.");
+  }
+
+  const response = await api.delete(`/users/${cpf}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data;
+};
+

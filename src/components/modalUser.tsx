@@ -1,29 +1,54 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { criarUsuario } from "@/service/user";
+import { criarUsuario, deleteUser } from "@/service/user";
 
-interface modalNovoUsuarioProps {
+interface ModalUserProps {
   isOpen: boolean;
   onClose: () => void;
-}
-
-export default function ModalUser({ isOpen, onClose }: modalNovoUsuarioProps) {
-  const [formData, setFormData] = useState<{
+  usuario?: {
+    id: string;
     name: string;
     email: string;
     cpf: string;
     role: "ADMIN" | "PERITO" | "ASSISTENTE";
-  }>({
+  } | null;
+  onRefresh: () => void;
+}
+
+export default function ModalUser({ isOpen, onClose, usuario, onRefresh }: ModalUserProps) {
+  const [formData, setFormData] = useState({
     name: "",
     email: "",
     cpf: "",
-    role: "ASSISTENTE",
+    role: "ASSISTENTE" as "ADMIN" | "PERITO" | "ASSISTENTE",
   });
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [temporaryPassword, setTemporaryPassword] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+
+  useEffect(() => {
+    if (usuario) {
+      setFormData({
+        name: usuario.name,
+        email: usuario.email,
+        cpf: usuario.cpf,
+        role: usuario.role,
+      });
+    } else {
+      setFormData({
+        name: "",
+        email: "",
+        cpf: "",
+        role: "ASSISTENTE",
+      });
+    }
+    setIsEditing(false);
+    setTemporaryPassword("");
+    setError("");
+  }, [usuario]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -35,37 +60,44 @@ export default function ModalUser({ isOpen, onClose }: modalNovoUsuarioProps) {
     e.preventDefault();
     setLoading(true);
     setError("");
-    setTemporaryPassword("");
+
+    if (!formData.name || !formData.email || !formData.cpf) {
+      setError("Todos os campos são obrigatórios.");
+      setLoading(false);
+      return;
+    }
 
     try {
-      const response = await criarUsuario(formData);
-      setTemporaryPassword(response.temporaryPassword);
-    } catch (err) {
-      setError(err.response?.data?.message || "Erro ao criar usuário");
+      await criarUsuario(formData);
+      setTemporaryPassword("Usuário salvo com sucesso.");
+      onRefresh();
+      onClose();
+    } catch (err: any) {
+      setError(err?.response?.data?.message || err.message || "Erro ao salvar usuário");
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    if (temporaryPassword) {
-      const timer = setTimeout(() => {
-        handleClose();
-      }, 10000);
-      return () => clearTimeout(timer);
+  const handleDelete = async () => {
+    if (!usuario) return;
+    const confirmed = confirm("Tem certeza que deseja excluir este usuário?");
+    if (!confirmed) return;
+
+    try {
+      await deleteUser(usuario.cpf);
+      onRefresh();
+      onClose();
+    } catch (err: any) {
+      setError(err?.response?.data?.message || err.message || "Erro ao excluir usuário");
     }
-  }, [temporaryPassword]);
+  };
 
   const handleClose = () => {
     onClose();
-    setFormData({
-      name: "",
-      email: "",
-      cpf: "",
-      role: "ASSISTENTE",
-    });
     setTemporaryPassword("");
     setError("");
+    setIsEditing(false);
   };
 
   if (!isOpen) return null;
@@ -73,41 +105,48 @@ export default function ModalUser({ isOpen, onClose }: modalNovoUsuarioProps) {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-[#F5F5F4] p-6 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-xl font-bold mb-4 text-center">Criar Novo Usuário</h2>
+        <h2 className="text-xl font-bold mb-4 text-center">
+          {usuario
+            ? isEditing
+              ? `Editar ${usuario.name}`
+              : `Visualizar ${usuario.name}`
+            : "Criar Novo Usuário"}
+        </h2>
 
         <form onSubmit={handleSubmit}>
-          <label htmlFor="name" className="font-bold text-base block mb-2">
+          <label className="font-bold text-base block mb-2">
             Nome Completo
             <input
               type="text"
-              placeholder="Nome"
               name="name"
               className="w-full mt-1 mb-3 p-2 border rounded"
               value={formData.name}
               onChange={handleChange}
+              readOnly={!isEditing && !!usuario}
             />
           </label>
 
-          <label htmlFor="email" className="font-bold text-base block mb-2">
+          <label className="font-bold text-base block mb-2">
             E-mail
             <input
               type="email"
-              placeholder="E-mail"
               name="email"
               className="w-full mt-1 mb-3 p-2 border rounded"
               value={formData.email}
               onChange={handleChange}
+              readOnly={!isEditing && !!usuario}
             />
           </label>
 
           <div className="flex flex-col sm:flex-row sm:gap-4">
-            <label htmlFor="role" className="font-bold text-base flex-1 mb-3">
+            <label className="font-bold text-base flex-1 mb-3">
               Cargo
               <select
                 name="role"
                 value={formData.role}
                 onChange={handleChange}
                 className="w-full mt-1 px-3 py-2 border rounded"
+                disabled={!isEditing && !!usuario}
               >
                 <option value="ADMIN">Administrador</option>
                 <option value="PERITO">Perito</option>
@@ -115,48 +154,55 @@ export default function ModalUser({ isOpen, onClose }: modalNovoUsuarioProps) {
               </select>
             </label>
 
-            <label htmlFor="cpf" className="font-bold text-base flex-1 mb-3">
+            <label className="font-bold text-base flex-1 mb-3">
               CPF
               <input
                 type="text"
-                placeholder="CPF"
                 name="cpf"
                 className="w-full mt-1 p-2 border rounded"
                 value={formData.cpf}
                 onChange={handleChange}
+                readOnly={!!usuario || !isEditing}
               />
             </label>
           </div>
 
           <div className="flex justify-between gap-4 mt-6">
-            <button
-              type="button"
-              onClick={onClose}
-              className="text-gray-600 hover:underline"
-            >
-              Cancelar
+            <button type="button" onClick={handleClose} className="text-gray-600 hover:underline">
+              Fechar
             </button>
-            <button
-              type="submit"
-              className="bg-[#002C49] text-white px-4 py-2 rounded hover:bg-[#00416D]"
-            >
-              {loading ? "Cadastrando..." : "Cadastrar"}
-            </button>
+
+            {usuario ? (
+              isEditing ? (
+                <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                  {loading ? "Salvando..." : "Salvar"}
+                </button>
+              ) : (
+                <div className="flex gap-2">
+                  <button type="button" onClick={() => setIsEditing(true)} className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">
+                    Editar
+                  </button>
+                  <button type="button" onClick={handleDelete} className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+                    Excluir
+                  </button>
+                </div>
+              )
+            ) : (
+              <button type="submit" className="bg-[#002C49] text-white px-4 py-2 rounded hover:bg-[#00416D]">
+                {loading ? "Cadastrando..." : "Cadastrar"}
+              </button>
+            )}
           </div>
 
           {temporaryPassword && (
             <div className="mt-4 bg-green-100 text-green-800 p-3 rounded">
-              <p>
-                <strong>Senha temporária gerada:</strong> {temporaryPassword}
-              </p>
+              <strong>{temporaryPassword}</strong>
             </div>
           )}
 
           {error && (
             <div className="mt-4 bg-red-100 text-red-800 p-3 rounded">
-              <p>
-                <strong>Erro:</strong> {error}
-              </p>
+              <strong>Erro:</strong> {error}
             </div>
           )}
         </form>
