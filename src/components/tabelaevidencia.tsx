@@ -40,6 +40,7 @@ export default function TabelaEvidencia({ caseId, onNext }: Props) {
       try {
         const data = await getEvidenciaByCaseId(caseId);
         setEvidencias(data);
+        console.log(data)
       } catch (error) {
         console.error("Erro na busca de evidências.", error);
       } finally {
@@ -138,6 +139,7 @@ export default function TabelaEvidencia({ caseId, onNext }: Props) {
                   <div className="flex items-center gap-4 ml-10">
                     <FileText
                       onClick={() => {
+                        console.log(evidencia._id)
                         setSelectedEvidenciaId(evidencia._id);
                         onNext("laudo", evidencia);
                       }}

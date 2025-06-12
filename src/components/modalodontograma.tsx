@@ -3,7 +3,7 @@ import { criarOdontograma } from "@/service/odontograma";
 
 interface ModalVitimaProps {
   isOpen: boolean;
-  onClose: () => void; 
+  onClose: () => void;
   vitimaId: string;
 }
 
@@ -16,19 +16,24 @@ export function parseJwt(token: string): any {
   }
 }
 
-export default function ModalOdontograma({ isOpen, onClose, vitimaId}: ModalVitimaProps) {
+export default function ModalOdontograma({
+  isOpen,
+  onClose,
+  vitimaId,
+}: ModalVitimaProps) {
   const [dentes, setDentes] = useState("");
-  const [observacao, setObservacao] = useState("")
+  const [tipodente, setTipoDente] = useState("");
+  const [observacoes, setObservacoes] = useState("");
 
   const handleCreateOdontograma = async () => {
-    
     if (!dentes || !observacao) {
       alert("PREENCHA TODOS OS CAMPOS!");
       return;
     }
     console.log("Enviando para criarLaudo:", {
       dentes,
-      observacao,
+      tipodente,
+      observacoes,
       vitimaId,
     });
     const token = localStorage.getItem("token");
@@ -38,11 +43,12 @@ export default function ModalOdontograma({ isOpen, onClose, vitimaId}: ModalViti
       alert("Usuário não autenticado!");
       return;
     }
-  
+
     try {
       await criarOdontograma({
         dentes,
-        observacao,
+        tipodente,
+        observacoes,
         vitimaId: vitimaId,
       });
       alert("Odontograma criado com sucesso!");
@@ -56,7 +62,7 @@ export default function ModalOdontograma({ isOpen, onClose, vitimaId}: ModalViti
         alert("Erro desconhecido");
       }
     }
-  }
+  };
   if (!isOpen) return null;
 
   return (
@@ -78,14 +84,26 @@ export default function ModalOdontograma({ isOpen, onClose, vitimaId}: ModalViti
             />
           </div>
 
+          <div className="flex flex-col">
+            <label className="text-sm font-medium">
+              Tipo do dente<span className="text-red-500">*</span>
+            </label>
+            <input
+              className="p-2 border border-gray-300 rounded"
+              value={tipodente}
+              onChange={(e) => setTipoDente(e.target.value)}
+              placeholder="Ex: Dente canino"
+            />
+          </div>
+
           {/* Observação */}
           <div className="flex flex-col">
             <label className="text-sm font-medium">Descrição</label>
             <textarea
               className="p-2 border border-gray-300 rounded h-28 resize-none"
               placeholder="Descreva a observação ao dente"
-              value={observacao}
-              onChange={(e) => setObservacao(e.target.value)}
+              value={observacoes}
+              onChange={(e) => setObservacoes(e.target.value)}
             />
           </div>
         </div>

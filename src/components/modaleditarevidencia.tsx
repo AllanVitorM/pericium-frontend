@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { PenTool, Upload } from "lucide-react";
 import { updateEvidencia } from "@/service/evidencia";
-import { buscarLaudo, assinarLaudo } from "@/service/laudo";
-
+import { buscarLaudo, assinarLaudo, criarLaudo } from "@/service/laudo";
 
 function parseJwt(token: string): any {
   try {
@@ -48,46 +47,106 @@ export default function ModalEditarEvidencia({
   const [laudoId, setLaudoId] = useState<string | null>(null);
   const [assinado, setAssinado] = useState(false);
   const [sucessoAssinatura, setSucessoAssinatura] = useState(false);
-
+  const [laudoGerado, setLaudoGerado] = useState(false);
   const handleUpdate = async () => {
     try {
       await updateEvidencia(formData._id, formData);
       alert("Evidência atualizada com sucesso!");
       onClose();
     } catch (error: any) {
-      console.error("Erro ao atualizar a evidência:", error.response?.data || error.message || error);
-      alert("Erro ao atualizar evidência: " + (error.response?.data?.message || error.message));
+      console.error(
+        "Erro ao atualizar a evidência:",
+        error.response?.data || error.message || error
+      );
+      alert(
+        "Erro ao atualizar evidência: " +
+          (error.response?.data?.message || error.message)
+      );
     }
   };
 
   useEffect(() => {
     if (evidencia) {
       setFormData(evidencia);
-  
+
       async function fetchLaudo() {
         try {
           const laudo = await buscarLaudo(evidencia._id);
           if (laudo.length > 0) {
             const primeiroLaudo = laudo[0];
             setLaudoId(primeiroLaudo._id);
-  
-            // Verifica se já está assinado
+            setLaudoGerado(true); // ESSENCIAL
+
             if (primeiroLaudo.assinado === true) {
               setSucessoAssinatura(true);
             } else {
               setSucessoAssinatura(false);
             }
           } else {
+            setLaudoGerado(false);
             console.log("Nenhum laudo encontrado para esta evidência.");
           }
         } catch (error) {
           console.error("Erro ao buscar laudo!", error);
         }
       }
-  
+
       fetchLaudo();
     }
   }, [evidencia]);
+
+  // const handleInputChange = (e: any) => {
+  //   const { name, value } = e.target;
+  //   setFormData((prev: any) => ({ ...prev, [name]: value }));
+  // };
+
+  // const handleUpdate = async () => {
+  //   try {
+  //     await updateEvidencia(formData._id, formData);
+  //     alert("Evidência atualizada com sucesso!");
+  //     setIsOpen(false);
+  //     router.refresh();
+  //   } catch (error) {
+  //     console.error("Erro ao atualizar evidência:", error);
+  //   }
+  // };
+
+  const gerarLaudo = async (evidenciaId: string) => {
+    if (!evidenciaId) return;
+
+    try {
+      const laudos = await buscarLaudo(evidenciaId);
+      if (laudos.length > 0) {
+        const novoLaudo = laudos[0];
+        setLaudoId(novoLaudo._id);
+        setLaudoGerado(true);
+        setSucessoAssinatura(novoLaudo.assinado === true);
+      } else {
+        await criarLaudo(evidenciaId);
+        alert("LAUDO CRIADO")
+        const laudosAposCriacao = await buscarLaudo(evidenciaId);
+        if (laudosAposCriacao.length > 0) {
+          const novoLaudo = laudosAposCriacao[0];
+          setLaudoId(novoLaudo._id);
+          setLaudoGerado(true);
+          setSucessoAssinatura(novoLaudo.assinado === true);
+          console.log("Laudo criado e buscado com sucesso.");
+        } else {
+          console.warn("Laudo criado mas não retornou na busca.");
+        }
+      }
+    } catch (error: any) {
+      console.error("Erro ao gerar laudo:", error);
+
+      let mensagem = "Erro ao gerar o laudo.";
+      if (error.response?.data?.message) {
+        const msg = error.response.data.message;
+        mensagem = typeof msg === "string" ? msg : JSON.stringify(msg);
+      }
+
+      alert(mensagem);
+    }
+  };
 
   const handleAssinatura = async () => {
     if (!laudoId) {
@@ -96,8 +155,8 @@ export default function ModalEditarEvidencia({
       return;
     }
 
-    const token = localStorage.getItem('token');
-    let peritoId: string | null = null
+    const token = localStorage.getItem("token");
+    let peritoId: string | null = null;
 
     if (token) {
       const decoded = parseJwt(token);
@@ -115,10 +174,16 @@ export default function ModalEditarEvidencia({
     }
 
     try {
-      console.log("Tentando assinar o laudo:", laudoId, "com peritoId:", peritoId);
+      console.log(
+        "Tentando assinar o laudo:",
+        laudoId,
+        "com peritoId:",
+        peritoId
+      );
       setAssinado(true);
 
       const response = await assinarLaudo(laudoId, peritoId);
+      console.log(response);
       if (response.status === 200) {
         setSucessoAssinatura(true);
         alert("Laudo assinado com sucesso.");
@@ -133,6 +198,16 @@ export default function ModalEditarEvidencia({
     }
   };
 
+
+  const handleAcaoLaudo = async () => {
+    if (!laudoGerado) {
+      await gerarLaudo(evidencia!._id);
+      return;
+    }
+
+    await handleAssinatura();
+  };
+
   if (!isOpen || !evidencia) return null;
 
   return (
@@ -142,7 +217,7 @@ export default function ModalEditarEvidencia({
         <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
           <h2 className="text-2xl font-bold">Editar Evidência</h2>
           <button
-            onClick={handleAssinatura}
+            onClick={handleAcaoLaudo}
             disabled={assinado || sucessoAssinatura}
             className={`flex items-center gap-2 ${
               sucessoAssinatura ? "bg-green-600" : "bg-[#002D62]"
@@ -153,7 +228,9 @@ export default function ModalEditarEvidencia({
               ? "Assinando..."
               : sucessoAssinatura
               ? "Assinado"
-              : "Assinar Laudo"}
+              : laudoGerado
+              ? "Assinar Laudo"
+              : "Gerar Laudo"}
           </button>
         </div>
 
@@ -182,7 +259,10 @@ export default function ModalEditarEvidencia({
               value={formData.dateRegister?.slice(0, 10)}
               className="p-2 border border-gray-300 rounded"
               onChange={(e) =>
-                setFormData((prev) => ({ ...prev, dateRegister: e.target.value }))
+                setFormData((prev) => ({
+                  ...prev,
+                  dateRegister: e.target.value,
+                }))
               }
             />
           </div>

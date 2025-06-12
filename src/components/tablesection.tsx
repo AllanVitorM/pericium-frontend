@@ -5,7 +5,7 @@ import { getUsers } from "@/service/user"; // Ajuste o caminho se necessário
 import { Eye, CircleX } from "lucide-react"; // Importando os ícones corretos
 
 interface User {
-  id: string;
+  _id: string;
   name: string;
   email: string;
   cpf: string;

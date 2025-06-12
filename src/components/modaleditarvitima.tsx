@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { updateVitima, deleteVitima } from "@/service/vitima";
+import TabelaOdontograma from "./tabelaodonto";
+import ModalOdontograma from "./modalodontograma";
+
 
 interface ModalEditarVitimaProps {
   isOpen: boolean;
@@ -19,7 +22,7 @@ export default function ModalEditarVitima({
   isOpen,
   onClose,
   vitima,
-  onUpdate, // <- ADICIONADO
+  onUpdate,
 }: ModalEditarVitimaProps) {
   const [formData, setFormData] = useState({
     NIC: "",
@@ -27,6 +30,8 @@ export default function ModalEditarVitima({
     genero: "",
     documento: "",
   });
+
+  const [modalOdontograma, setModalOdontograma] = useState(false);
 
   useEffect(() => {
     if (vitima) {
@@ -38,6 +43,7 @@ export default function ModalEditarVitima({
       });
     }
   }, [vitima]);
+
 
   const handleUpdate = async () => {
     try {
@@ -58,18 +64,26 @@ export default function ModalEditarVitima({
       });
 
       alert("Vítima atualizada com sucesso!");
-      onUpdate(updated); // <- ADICIONADO
+      onUpdate(updated);
       onClose();
     } catch (error: any) {
-      console.error("Erro ao atualizar a vítima:", error.response?.data || error.message);
-      alert("Erro ao atualizar vítima: " + (error.response?.data?.message || error.message));
+      console.error(
+        "Erro ao atualizar a vítima:",
+        error.response?.data || error.message
+      );
+      alert(
+        "Erro ao atualizar vítima: " +
+          (error.response?.data?.message || error.message)
+      );
     }
   };
 
   const handleDelete = async () => {
     if (!vitima?._id) return;
 
-    const confirmDelete = window.confirm("Tem certeza que deseja excluir esta vítima?");
+    const confirmDelete = window.confirm(
+      "Tem certeza que deseja excluir esta vítima?"
+    );
     if (!confirmDelete) return;
 
     try {
@@ -77,10 +91,17 @@ export default function ModalEditarVitima({
       alert("Vítima excluída com sucesso!");
       onClose();
     } catch (error: any) {
-      console.error("Erro ao excluir a vítima:", error.response?.data || error.message);
-      alert("Erro ao excluir vítima: " + (error.response?.data?.message || error.message));
+      console.error(
+        "Erro ao excluir a vítima:",
+        error.response?.data || error.message
+      );
+      alert(
+        "Erro ao excluir vítima: " +
+          (error.response?.data?.message || error.message)
+      );
     }
   };
+
 
   if (!isOpen || !vitima) return null;
 
@@ -93,7 +114,9 @@ export default function ModalEditarVitima({
             <input
               value={formData.NIC}
               className="p-2 border border-gray-300 rounded"
-              onChange={(e) => setFormData({ ...formData, NIC: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, NIC: e.target.value })
+              }
             />
           </div>
 
@@ -102,7 +125,9 @@ export default function ModalEditarVitima({
             <input
               value={formData.nome}
               className="p-2 border border-gray-300 rounded"
-              onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, nome: e.target.value })
+              }
             />
           </div>
 
@@ -111,7 +136,9 @@ export default function ModalEditarVitima({
             <input
               value={formData.genero}
               className="p-2 border border-gray-300 rounded"
-              onChange={(e) => setFormData({ ...formData, genero: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, genero: e.target.value })
+              }
             />
           </div>
 
@@ -121,8 +148,32 @@ export default function ModalEditarVitima({
               value={formData.documento}
               className="p-2 border border-gray-300 rounded"
               type="number"
-              onChange={(e) => setFormData({ ...formData, documento: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, documento: e.target.value })
+              }
             />
+          </div>
+
+          <div className="col-span-2 flex flex-col gap-2">
+            <div>
+              <button
+                className="w-auto p-2 mb-2 text-white bg-[#15354B] rounded-md self-end"
+                onClick={() => setModalOdontograma(true)}
+                type="button"
+              >
+                Adicionar odontograma
+              </button>
+
+              <TabelaOdontograma vitimaId={vitima._id} />
+            </div>
+
+            {modalOdontograma && (
+              <ModalOdontograma
+                isOpen={modalOdontograma}
+                onClose={() => setModalOdontograma(false)}
+                vitimaId={vitima._id} // se for necessário
+              />
+            )}
           </div>
         </div>
 

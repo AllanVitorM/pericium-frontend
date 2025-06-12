@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { criarCaso } from "@/service/casos";
 
 function parseJwt(token: string): any {
   try {
-    return JSON.parse(atob(token.split('.')[1]));
+    return JSON.parse(atob(token.split(".")[1]));
   } catch (e) {
     console.error("Erro ao decodificar token jwt", e);
     return null;
@@ -30,17 +30,31 @@ export default function ModalNovoCaso({ isOpen, onClose }: Props) {
   const [error, setError] = useState("");
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
+  console.log(formData);
+  useEffect(() => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    const decoded = parseJwt(token);
+    const userId = decoded?.sub;
+    if (userId) {
+      setFormData(prev => ({ ...prev, userId }));
+    }
+  }
+}, [isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (!token) {
       setError("Token não encontrado");
       setLoading(false);
@@ -49,7 +63,7 @@ export default function ModalNovoCaso({ isOpen, onClose }: Props) {
 
     const decoded = parseJwt(token);
     const userId = decoded?.sub;
-
+    console.log(formData);
     try {
       await criarCaso({
         ...formData,
@@ -70,7 +84,9 @@ export default function ModalNovoCaso({ isOpen, onClose }: Props) {
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-lg">
         <div className="flex justify-center">
-          <h2 className="text-3xl font-bold mb-6 text-center">Registrar Caso</h2>
+          <h2 className="text-3xl font-bold mb-6 text-center">
+            Registrar Caso
+          </h2>
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -98,7 +114,9 @@ export default function ModalNovoCaso({ isOpen, onClose }: Props) {
               onChange={handleChange}
               required
             >
-              <option value="PENDENTE" disabled>PENDENTE</option>
+              <option value="PENDENTE" disabled>
+                PENDENTE
+              </option>
             </select>
           </div>
 

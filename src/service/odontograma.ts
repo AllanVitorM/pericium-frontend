@@ -2,7 +2,8 @@ import api from "./api";
 
 export interface odontogramaDTO {
   dentes: string;
-  observacao: string;
+  tipodente: string;
+  observacoes: string;
   vitimaId: string;
 }
 
@@ -23,3 +24,17 @@ export const criarOdontograma = async (dados: odontogramaDTO) => {
 };
 
 
+export const getByVitima = async (vitimaId: string) => {
+      const token = localStorage.getItem("token");
+
+    if (!token) {
+        throw new Error("Token JWT não encontrado.");
+    }
+
+    const response = await api.get(`/odontograma/vitima/${vitimaId}`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        },
+    })
+    return response.data
+}

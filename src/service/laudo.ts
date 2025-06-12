@@ -7,16 +7,16 @@ export interface CreateLaudoDTO {
     userId: string
 }
 
-export const criarLaudo =  async (dados: CreateLaudoDTO) => {
+export const criarLaudo =  async (evidenciaId: string) => {
     const token = localStorage.getItem("token");
 
         if (!token) {
             throw new Error("Token JWT não encontrado.");
           }
 
-          console.log("Enviando dados para criação de laudo:", dados);
+          console.log("Enviando dados para criação de laudo:", evidenciaId);
           
-          const response = await api.post("/laudos/createreport", dados, {
+          const response = await api.post(`/laudo/gerar/${evidenciaId}`, evidenciaId, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
