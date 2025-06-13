@@ -42,6 +42,7 @@ import api from "./api";
           Authorization: `Bearer ${token}`
         },
       })
+      console.log(response.data)
       return response.data
     }
 

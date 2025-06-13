@@ -49,16 +49,10 @@ export default function TabelaEvidencia({ caseId, onNext }: Props) {
     fetchEvidencias();
   }, [caseId]);
 
-  const visualizarPdf = async (laudoId: string) => {
-    console.log("ID do Laudo:", laudoId);
-    if (!laudoId) {
-      console.error("LaudoId está undefined!");
-      return;
-    }
-
+  const visualizarPdf = async (evidenciaId: string) => {
     try {
-      const data = await getByPdf(laudoId);
-      const pdfUrl = data.pdfUrl;
+      const data = await getByPdf(evidenciaId);
+      const pdfUrl = data?.pdfUrl;
       window.open(pdfUrl, "_blank");
     } catch (error) {
       console.error("Erro ao visualizar PDF: ", error);

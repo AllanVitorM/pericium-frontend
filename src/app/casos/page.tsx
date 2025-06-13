@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import ModalNovoCaso from "@/components/modalnovocaso";
-import ProtectedRoute from "@/components/protect_route/protectRoute";
 import Sidebar from "@/components/sidebar";
 import AdminHeader from "@/components/headeradm";
 import { ButtonandSearch } from "@/components/button";
@@ -14,7 +13,6 @@ export default function CasosPage() {
   const fecharModal = () => setModalAtual(null);
 
   return (
-    <ProtectedRoute allowedRoles={["ADMIN", "PERITO", "ASSISTENTE"]}>
       <div className="flex h-screen">
 
           <div className="lg:w-64">
@@ -39,6 +37,6 @@ export default function CasosPage() {
           />
         </main>
       </div>
-    </ProtectedRoute>
+
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getProfile } from "@/service/user";
+// import { getProfile } from "@/service/user";
 
 export default function AdminHeader() {
   const [user, setUser] = useState<{
@@ -10,23 +10,23 @@ export default function AdminHeader() {
     cargo: string;
   } | null>(null);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const userData = await getProfile();
+  // useEffect(() => {
+  //   const fetchUser = async () => {
+  //     try {
+  //       const userData = await getProfile();
 
-        setUser({
-          id: userData.id,
-          nome: userData.name,
-          cargo: userData.role,
-        });
-      } catch (error) {
-        console.error("Erro ao buscar perfil do usuário:", error);
-      }
-    };
+  //       setUser({
+  //         id: userData.id,
+  //         nome: userData.name,
+  //         cargo: userData.role,
+  //       });
+  //     } catch (error) {
+  //       console.error("Erro ao buscar perfil do usuário:", error);
+  //     }
+  //   };
 
-    fetchUser();
-  }, []);
+  //   fetchUser();
+  // }, []);
 
   if (!user) {
     return (

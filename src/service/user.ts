@@ -27,36 +27,36 @@ interface CreateUserDTO {
     return response.data;
   };
 
-  export const getUser = async (cpf:string) => {
-    const token = localStorage.getItem("token");
+//   export const getUser = async (cpf:string) => {
+//     const token = localStorage.getItem("token");
 
-    if (!token) {
-      throw new Error("Token JWT não encontrado.");
-    }
+//     if (!token) {
+//       throw new Error("Token JWT não encontrado.");
+//     }
 
-    const response = await api.get(`/users/${cpf}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return response.data;
-  };
+//     const response = await api.get(`/users/${cpf}`, {
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//       },
+//     });
+//     return response.data;
+//   };
 
-export const getProfile = async () => {
-  const token = localStorage.getItem("token");
+// export const getProfile = async () => {
+//   const token = localStorage.getItem("token");
 
-  if (!token) {
-    throw new Error("Token JWT não encontrado.");
-  }
+//   if (!token) {
+//     throw new Error("Token JWT não encontrado.");
+//   }
 
-  const response = await api.get("/auth/me", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+//   const response = await api.get("/auth/me", {
+//     headers: {
+//       Authorization: `Bearer ${token}`,
+//     },
+//   });
 
-  return response.data;
-};
+//   return response.data;
+// };
 export const updatePassword = async (oldPassword: string, newPassword: string) => {
   const token = localStorage.getItem("token");
 

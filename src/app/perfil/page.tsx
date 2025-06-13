@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Sidebar from "@/components/sidebar";
-import { getProfile, updatePassword } from "@/service/user";
 import ModalSenha from "@/components/modalsenha";
 
 export default function PerfilPage() {
@@ -17,45 +16,45 @@ export default function PerfilPage() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  useEffect(() => {
-    async function fetchProfile() {
-      try {
-        const profile = await getProfile();
-        setForm({
-          nome: profile.name || "",
-          cargo: profile.role || "",
-          cpf: profile.cpf || "",
-          id: profile.id ? String(profile.id) : "",
-          email: profile.email || "",
-          senha: "", 
-        });
-      } catch (error) {
-        console.error("Erro ao buscar perfil:", error);
-      }
-    }
+  // useEffect(() => {
+  //   async function fetchProfile() {
+  //     try {
+  //       const profile = await getProfile();
+  //       setForm({
+  //         nome: profile.name || "",
+  //         cargo: profile.role || "",
+  //         cpf: profile.cpf || "",
+  //         id: profile.id ? String(profile.id) : "",
+  //         email: profile.email || "",
+  //         senha: "", 
+  //       });
+  //     } catch (error) {
+  //       console.error("Erro ao buscar perfil:", error);
+  //     }
+  //   }
 
-    fetchProfile();
-  }, []);
+  //   fetchProfile();
+  // }, []);
 
-  async function handleSavePassword(oldPassword: string, newPassword: string) {
-    try {
-      await updatePassword(oldPassword, newPassword);
-      alert("Senha atualizada com sucesso!");
-    } catch (error) {
-      console.error("Erro ao atualizar a senha:", error);
-      alert("Erro ao atualizar a senha. Verifique se a senha atual está correta.");
-    }
-  }
+  // async function handleSavePassword(oldPassword: string, newPassword: string) {
+  //   try {
+  //     await updatePassword(oldPassword, newPassword);
+  //     alert("Senha atualizada com sucesso!");
+  //   } catch (error) {
+  //     console.error("Erro ao atualizar a senha:", error);
+  //     alert("Erro ao atualizar a senha. Verifique se a senha atual está correta.");
+  //   }
+  // }
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-  }
+  // function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+  //   const { name, value } = e.target;
+  //   setForm((prev) => ({ ...prev, [name]: value }));
+  // }
 
-  function handleLogout() {
-    console.log("Encerrar sessão clicado!");
-    // Aqui você pode limpar tokens, redirecionar, etc.
-  }
+  // function handleLogout() {
+  //   console.log("Encerrar sessão clicado!");
+  //   // Aqui você pode limpar tokens, redirecionar, etc.
+  // }
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row font-sans">
